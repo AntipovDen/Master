@@ -63,7 +63,7 @@
   The probability of the extention of the connected component by one vertex is not less then multiplication of probabilities 
   of taking the edge not from the spanning tree on the probability of putting it's new start into the connected component and it's end outside the connected component:
   
-  $$P_{inc} \ge \frac{E - i + 1}{E} \cdot \frac{i(V - i)}{V^2}$$,
+  $$P_{inc} \ge \frac{E - i + 1}{E} \cdot \frac{i(V - i)}{V^2},$$
   
   where $E$ -- number of edges, $V$ -- number of vertices in the graph, $i$ -- number of vertices in the current connected component.
   
@@ -76,9 +76,32 @@
   
   \begin{align*}
    E_{i=V} & = \sum_{i = 1}^{V - 1} \frac{EV^2}{(E - i + 1)i(V - i)} = \sum_{i = 1}^{V - 1} \frac{EV}{E - i  + 1} \left( \frac{1}{V - i} + \frac{1}{i}\right) = \\
-	  & = \sum_{i = 1}^{V - 1} \frac{}{×}
+	  & = \sum_{i = 1}^{V - 1} \left( \frac{EV}{E - V + 1} \left( \frac{1}{V - i} - \frac{1}{E - i + 1} \right) + \frac{EV}{E + 1} \left( \frac{1}{i} + \frac{1}{E - i + 1} \right) \right) = \\
+	  & = EV \left( \frac{1}{E - V + 1} + \frac{1}{E + 1} \right) \sum_{i = 1}^{V - 1} \frac{1}{i} + EV \left( \frac{1}{E + 1} - \frac{1}{E - V + 1} \right) \sum_{i = 1}^{V - 1} \frac{1}{E - i + 1} \approx \\
+	  & \approx \frac{V(2E - V)}{E - V} \ln{V} - \frac{V^2}{E - V} (\ln{E} - \ln{(E - V)} )
   \end{align*}
-
+  
+  Here are the graphic of this functuion for $V = 500$. The red line is $2V \ln{V}$ constant that is asimptote of this function for large number of edges:
+  
+  \includegraphics[height=5cm]{pic/Formula.png}
+  
+  We can see that with number of edges that is only little greater than number of vertices the expected runtime of the first phase is really largel. 
+  But experiments showed that in this case algorithm finds optimum before the end of the first phase.
+  In the next graphics we can see the average number of vertices in the connected component for each iteration. The vertical line shows the average number of algorithm iterations.
+  
+  \includegraphics[height=5cm]{pic/reachable_vertices_v15e15.png}
+  \includegraphics[height=5cm]{pic/reachable_vertices_v15e30.png}
+  
+  So we can see that for small number of edges the expected runtime of the algorithm is less then expected runtime of the first phase and this case should be considered separatly.
+  
+  Also to prove the upper bound we need to prove that the case when the size of connected component decreases is rare enough.
+  But there are too many cases when the size of the component can decrease and counting their probabilities is a complex problem.
+  
+  %TODO посмотри дома тут формулки для листьев
+  
+  \includegraphics[height=5cm]{pic/leaves_v15e15.png}
+  \includegraphics[height=5cm]{pic/firstPart.png}
+  
  
  
 \end{document}
