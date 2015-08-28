@@ -1,0 +1,221 @@
+\documentclass{beamer}
+\usetheme{CambridgeUS}
+
+%\documentclass[handout]{beamer}
+%\usetheme{Pittsburgh}
+%\beamertemplatesolidbackgroundcolor{black!2}
+%\setbeamertemplate{footline}[frame number]
+%\usepackage{pgfpages}
+%%\pgfpagesuselayout{4 on 1}[a4paper,border shrink=5mm,landscape]
+%\pgfpagesuselayout{8 on 1}[a4paper,border shrink=5mm]
+
+%%% PACKAGES
+\usepackage[russian]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{tikz}
+\usepackage{graphics}
+\usepackage{color}
+
+%%% BEAMER SETTINGS
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{headline}{}
+
+%%% TIKZ SETTINGS
+\usetikzlibrary{fit}
+
+%%% NEW COMMANDS
+\def\pitem{\pause \item}
+
+\DeclareGraphicsRule{.1}{mps}{*}{}
+\DeclareGraphicsRule{.2}{mps}{*}{}
+\DeclareGraphicsRule{.3}{mps}{*}{}
+\DeclareGraphicsRule{.4}{mps}{*}{}
+\DeclareGraphicsRule{.5}{mps}{*}{}
+\DeclareGraphicsRule{.6}{mps}{*}{}
+
+%\includeonlyframes{current} % leaves only the given frames
+
+\title[Генерация тестов]{Теоретический анализ времени работы эволюционных алгоритмов при генерации тестов}
+%\transduration{20}
+\author[Денис Антипов]{Денис Антипов}
+\institute[Университет ИТМО]{Национальный исследовательский университет информационных технологий, механики и оптики}
+\date{}
+
+\begin{document}
+
+\begin{frame}
+%\transduration{20}
+\begin{center}
+{\scriptsize Санкт-Петербургский национальный исследовательский университет \\ информационных технологий, механики и оптики}
+
+\vspace{1cm}
+
+{\scriptsize Факультет информационных технологий и программирования
+
+Кафедра компьютерных технологий}
+
+\vspace{1cm}
+
+\vbox{\large\bfseries
+Теоретический анализ времени работы эволюционных алгоритмов при генерации тестов
+}
+
+\vspace{1cm}
+
+{\large Антипов Денис Сергеевич \\}
+{\large Группа 5539}
+
+
+\vspace{1cm}
+
+{\large Научный руководитель: к.т.н., ассистент кафедры ТП М.~B.~Буздалов}
+
+
+\end{center}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\frame[label=title]{\titlepage}
+
+\begin{frame}{Решаемая проблема}
+%\transduration{20}
+\begin{block}{Алгоритм Дейкстры}
+\begin{itemize}
+\item Алгоритм на графах, находящий кратчайшие расстояния от одной вершины графа до всех остальных.
+\item Работает только на графах без ребер отрицательного веса.
+\end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}{Решаемая проблема}
+%\transduration{20}
+\begin{block}{Генерация тестов}
+\begin{itemize}
+\item Для генерации графа используется эволюционный алгоритм.
+\item Максимизируется число релаксируемых ребер.
+\item Начальный граф: все ребра из одной вершины в началаьную.
+\item На каждой итерации случайным образом переставляем случайное ребро.
+\item Берется новый граф, если число релаксируемых ребер в нем не меньше. Иначе остается предыдущий.
+\end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}{Текущие результаты}
+%\transduration{20}
+\begin{block}{Среднее число итераций}
+При фиксированном числе вершин: \textcolor{blue}{5}, \textcolor{red}{10} и \textcolor{green}{15} (200 запусков алгоритма):
+\begin{center}
+\includegraphics*[height=5cm]{pic/const_vertexes_20.png}
+\end{center}
+\end{block}
+\end{frame}
+
+\begin{frame}{Текущие результаты}
+%\transduration{20}
+\begin{block}{Среднее число итераций}
+При фиксированном числе ребер: \textcolor{blue}{10}, \textcolor{red}{20} и \textcolor{green}{30} (200 запусков алгоритма):
+\begin{center}
+\includegraphics*[height=5cm]{pic/const_edges.png}
+\end{center}
+\end{block}
+\end{frame}
+
+\begin{frame}{Текущие результаты}
+%\transduration{20}
+\begin{block}{Сбор статистики}
+Были найдены средние величины, зависящие от номера итерации:
+\begin{itemize}
+ \item Число вершин в КС.
+ \item Число листьев.
+ \item Максимальная глубина (в ребрах и в весах).
+ \item Число недостижимых ребер.
+\end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}{Текущие результаты}
+%\transduration{20}
+\begin{block}{Исследование}
+Существовала идея разбить время работы на 2 части:
+\begin{itemize}
+ \item Разрастание графа.
+ \item Расстановка оставшихся нерелаксированных ребер.
+\end{itemize}
+\end{block}
+\end{frame}
+
+
+\begin{frame}{Текуще результаты}
+%\transduration{20}
+\begin{block}{Разрастание графа}
+\begin{itemize}
+ \item Компонента связности может уменьшаться с вероятностью, пропорциональной числу листев в графе.
+ \item Ребра могут образовывать некоторые отдельные компоненты связности.
+\end{itemize}
+Без этих фактов получено выражение матожидания времени разрастания:
+$M = \frac{VE}{(E + 1)(E + 1 - V)} \left( (2E + 2 - v) \ln (V - 1) - V \ln \frac{E}{E + 1 - V}\right)$
+\end{block}
+\end{frame}
+
+\begin{frame}{Текуще результаты}
+%\transduration{20}
+\begin{block}{Разрастание графа}
+$M = \frac{VE}{(E + 1)(E + 1 - V)} \left( (2E + 2 - v) \ln (V - 1) - V \ln \frac{E}{E + 1 - V}\right)$
+\begin{center}
+\includegraphics*[height=5cm]{pic/Formula.png}
+\end{center}
+\end{block}
+\end{frame}
+
+\begin{frame}{Текуще результаты}
+%\transduration{20}
+\begin{block}{Число вершин в КС}
+\begin{center}
+\includegraphics*[height=4cm]{pic/reachable_vertexes_v15e15.png}
+\includegraphics*[height=4cm]{pic/reachable_vertexes_v15e30.png}
+\end{center}
+\end{block}
+\end{frame}
+
+\begin{frame}{Текуще результаты}
+%\transduration{20}
+\begin{block}{Матожидание числа листьев на $i$-й итерации}
+\begin{itemize}
+ \item Было придумано выражение для вероятности того, что вершина - лист на $i$-й итерации, являющееся суммой достаточно сложных выражений.
+ \item Первое слагаемое - $\frac{r}{V^2}\left(\frac{V - 1}{V} \right)^{2(i-1)}\left( 1 - \left(\frac{E - 1}{E} \right)^{i - 1} \right)$
+ \item $r$  - число вершин в компоненте связности на $i$-й итерации, берется из результатов эксперимента.
+\end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}{Текуще результаты}
+%\transduration{20}
+\begin{block}{Сравнение выражения с реальным результатом}
+\begin{center}
+\includegraphics*[height=4cm]{pic/firstPart.png}
+\includegraphics*[height=4cm]{pic/leaves_v15e15.png}
+\end{center}
+\end{block}
+\end{frame}
+
+\begin{frame}{Дальнейшие действия}
+%\transduration{20}
+\begin{block}{}
+\begin{itemize}
+\item Добить матожидание числа лисьев.
+\item Оценить вероятность того, что ребро попало в релаксируемую позицию.
+\end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}{}
+\begin{center}
+Спасибо за внимание!
+\end{center}
+\end{frame}
+
+
+
+\end{document}
