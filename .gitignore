@@ -1,0 +1,5 @@
+#Files created while compilation
+*.log
+*.aux
+*.pdf
+*.backup
