@@ -95,13 +95,37 @@
   
   So we can see that for small number of edges the expected runtime of the algorithm is less then expected runtime of the first phase and this case should be considered separatly.
   
-  Also to prove the upper bound we need to prove that the case when the size of connected component decreases is rare enough.
-  But there are too many cases when the size of the component can decrease and counting their probabilities is a complex problem.
-  
   %TODO посмотри дома тут формулки для листьев
+  Also to prove the upper bound we need to prove that the case when the size of connected component decreases is rare enough.
+  So we need to find the expected number of leaves for each iteration.
+  There are man cases when the number of leaves changes. But finding the probability of being a leaf for the one vertex is a little bit simplier.
+  Assume that our algorithm has already passed $i$ iterations. Consider vertex $v$. It is leaf after $i$ iterations, if:
+  \begin{enumerate}
+   \item there was one iteration when the edge from the conneced component to the $v$ was added (we consider the connected component after $i$ iterations);
+   \item on other steps this edge wasn't removed;
+   \item there were from one to $\lceil \frac{i - 2}{2} \rceil$ pairs of iterations of adding the edge adjacent to the $v$ and removing it;
+  \end{enumerate}
+  
+  So we should sum the probabilities of the cases, for $0$ pairs of iterations, for $1$ pair and so on.
+  
+  For $0$ pairs the probability is following:
+  
+  $$p_0(i) = \sum_{j = 1}^{i - 1} \frac{r}{V^2} \left(\frac{V - 1}{V} \right)^{2(i - 1)} \left(\frac{E - 1}{E}\right)^{i - j - 1}$$
+  
+  The first fraction in the sum is the probability of adding the from the connected component to the $v$ ($r$ is the size of the connected component, but it's unknown at the moment).
+  The second fraction is the probability that on another iterations no edge will be set adjucent to the $v$.
+  The third fraction is the probability of the leaving the edge leading to the $v$  that was set on te iteration $j$. Finally we sum all this probabilities for all possible $j$
+  
+  We can see the graphic of this function for the 15 vertices and 15 edges ($r$ was taken from the experiment results):
+  
+  \includegraphics[height=5cm]{pic/firstPart.png}
+  
+  Actually the experiments showed that number of leaves doesn't decreasse, but it stops to increase on some moment:
   
   \includegraphics[height=5cm]{pic/leaves_v15e15.png}
-  \includegraphics[height=5cm]{pic/firstPart.png}
+  
+  If we manage with finding the exact formulas for the other number of pairs of iterations, we probably can sum them and receive the function like in the picture above. 
+  But it's too complex to find even the exact formula for the case when there's only one pair of iterations.
   
  \section{Random graphs}
  \subsection{Problem statement}
