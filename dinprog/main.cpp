@@ -88,27 +88,97 @@ int main()
     long double***** a = new long double****[V + 1];
     for (int vg = 1; vg <= V; vg++)
     {
+        std::cout << vg << "\n";
+
         a[vg] = new long double***[vg + 1];
-        for (int v = 1; v <= vg; v++)
+
+        //a(vg, 1, 0, 1, e) = 1
+
+        a[vg][1] = new long double**[1];
+        a[vg][1][0] = new long double*[2];
+        a[vg][1][0][1] = new long double[V2 + 1];
+        for (int e = 0; e <= V2; e++)
+        {
+            a[vg][1][0][1][e] = 1.0;
+        }
+
+        for (int v = 2; v <= vg; v++)
         {
             a[vg][v] = new long double**[v];
+
+            //a(vg, v, 0, l, e) = 0, if v != 1
             a[vg][v][0] = new long double*[v + 1];
-            for (int l = 1; l < v )
-            for (int i = 0; i < v; i++)
+            for (int l = 1; l <= v; l++)
+            {
+                a[vg][v][0][l] = new long double[V2 + 1];
+                for (int e = 0; e <= V2; e++)
+                {
+                    a[vg][v][0][l][e] = 0.0;
+                }
+            }
+
+            //rest a(vg, v, i, l, e) = sum(m=1..v-l-1)sum(e0=l..e) a(vg, v-l, i-1, m, e-e0) * comb(vg-v+l, l) * comb(e, e0) * s(v,l,m,e0-l)
+            for (int i = 1; i < v; i++)
             {
                 a[vg][v][i] = new long double*[v - i  + 1];
                 for (int l = 1; l <= v - i; l++)
                 {
                     a[vg][v][i][l] = new long double[V2 + 1];
-                    for (int e = 1; e <= V2; e++) {
+                    for (int e = 0; e <= V2; e++) {
                         a[vg][v][i][l][e] = 0.0;
-                        for
+                        for (int m = 1; m <= v - l - i + 1; m++)
+                            for (int e0 = l; e0 < e; e0++)
+                            {
+                                a[vg][v][i][l][e] += a[vg][v - l][i - 1][m][e - e0] * comb[vg - v + l][l] * comb[e][e0] * s[v][l][m][e0 - l];
+                            }
                     }
                 }
             }
         }
     }
+    //seems like i did it!
 
+    //delete s
+    for (int v = 0; v <= V; v++)
+    {
+        s[v] = new long double**[v + 1];
+        for (int l = 0; l <= v; l++)
+        {
+            for (int m = 0; m <= v - l; m++)
+            {
+                delete(s[v][l][m]);
+            }
+            delete(s[v][l]);
+        }
+        delete(s[v]);
+    }
+    delete(s);
+
+    //calculate C(vg, eg, i, l)
+    long double**** c = new long double***[V + 1];
+    for (int vg = 1; vg <= V; vg++) {
+        c[vg] = new long double**[V2 + 1];
+        for (int eg = 1; eg <= V2; eg++)
+        {
+            c[vg][eg] = new long double*[vg];
+            for (int i = 0; i < vg; i++) {
+                c[vg][eg][i] = new long double[vg - i];
+                for (int l = 1; l <= vg - i; l++)
+                {
+                    c[vg][eg][i][l] = 0;
+                    for (int v = 1; v < vg; v++)
+                    {
+                        long double vvvl = (vg - v) * (vg + l);
+                        long double vvvl_ee = pow(vvvl, eg);
+                        for (int e = 0; e <= eg; e++) {
+                            c[vg][eg][i][l] += a[vg][v][i][l][e] * vvvl_ee * comb[eg][e];
+                            vvvl_ee /= vvvl;
+                        }
+                    }
+                }
+            }
+        }
+    }
 
 //    for (int i = 0; i <= V2; i++)
 //    {

@@ -3,8 +3,14 @@
 
 int main()
 {
+    int* aaa = new int[0];
+    return 0;
+
+
     //we are counting functions for V = 1..20, E = 1..V^2  
-    
+   
+
+ 
     for (int V = 1; V <= 20; V++)
         for (int E = 1; E <= V^2; E++)
         {
