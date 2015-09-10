@@ -2,8 +2,8 @@
 #include <fstream>
 #include <cmath>
 
-#define V2 400
-#define V 20
+#define V2 169
+#define V 13
 
 int main()
 {
@@ -50,7 +50,7 @@ int main()
     }
 
     //calculate the sum of stirling numbers for v = 1..20, l = 1..v, e_0 = l..v^2, m = 1..v - l
-    long double**** s = new long double***[V2 + 1];
+    long double**** s = new long double***[V + 1];
     for (int v = 0; v <= V; v++)
     {
         s[v] = new long double**[v + 1];
@@ -60,8 +60,8 @@ int main()
             s[v][l] = new long double*[v - l + 1];
             for (int m = 0; m <= v - l; m++)
             {
-                s[v][l][m] = new long double[v * v  - l + 1];
-                for (int e0 = l; e0 <= v * v; e0++)
+                s[v][l][m] = new long double[V2  - l + 1];
+                for (int e0 = l; e0 <= V2; e0++)
                 {
                     s[v][l][m][e0 - l] = 0.0;
                     long double m_pow = pow(m, l);
@@ -88,8 +88,6 @@ int main()
     long double***** a = new long double****[V + 1];
     for (int vg = 1; vg <= V; vg++)
     {
-        std::cout << vg << "\n";
-
         a[vg] = new long double***[vg + 1];
 
         //a(vg, 1, 0, 1, e) = 1
@@ -138,10 +136,11 @@ int main()
     }
     //seems like i did it!
 
+
+    
     //delete s
     for (int v = 0; v <= V; v++)
     {
-        s[v] = new long double**[v + 1];
         for (int l = 0; l <= v; l++)
         {
             for (int m = 0; m <= v - l; m++)
@@ -154,19 +153,22 @@ int main()
     }
     delete(s);
 
+
+
     //calculate C(vg, eg, i, l)
     long double**** c = new long double***[V + 1];
     for (int vg = 1; vg <= V; vg++) {
-        c[vg] = new long double**[V2 + 1];
-        for (int eg = 1; eg <= V2; eg++)
+        c[vg] = new long double**[vg * vg + 1];
+        for (int eg = 0; eg <= vg * vg; eg++)
         {
             c[vg][eg] = new long double*[vg];
-            for (int i = 0; i < vg; i++) {
-                c[vg][eg][i] = new long double[vg - i];
+            for (int i = 0; i < vg; i++)
+            {
+                c[vg][eg][i] = new long double[vg - i + 1];
                 for (int l = 1; l <= vg - i; l++)
                 {
-                    c[vg][eg][i][l] = 0;
-                    for (int v = 1; v < vg; v++)
+                    c[vg][eg][i][l] = 0.0;
+                    for (int v = l + i; v < vg; v++)
                     {
                         long double vvvl = (vg - v) * (vg + l);
                         long double vvvl_ee = pow(vvvl, eg);
@@ -180,14 +182,101 @@ int main()
         }
     }
 
-//    for (int i = 0; i <= V2; i++)
-//    {
-//        for (int j = 0; j <= i; j++)
-//        {
-//            std::cout << stirling[i][j] << " ";
-//        }
-//        std::cout << "\n";
-//    }
+    
+    //delete a
+    for (int vg = 1; vg <= V; vg++)
+    {
+        for (int v = 1; v <= vg; v++)
+        {
+            for (int i = 0; i < v; i++)
+            {
+                for (int l = 1; l <= v - i; l++)
+                {
+                    delete(a[vg][v][i][l]);
+                }
+                delete(a[vg][v][i]);
+            }
+            delete(a[vg][v]);
+        }
+        delete(a[vg]);
+    }
+    delete(a);
 
+    
+    //calculate E(i)
+
+    long double*** e = new long double**[V + 1];
+    for (int vg = 1; vg <= V; vg++)
+    {
+        e[vg] = new long double*[vg * vg + 1];
+        long double v_2e = 1.0;
+        for (int eg = 0; eg <= vg * vg; eg++)
+        {
+            e[vg][eg] = new long double[vg];
+            for (int i = 0; i < vg; i++)
+            {
+                e[vg][eg][i] = 0.0;
+                for (int l = 1; l <= vg - i; l++)
+                {
+                    e[vg][eg][i] += c[vg][eg][i][l] * l;
+                }
+                e[vg][eg][i] /= v_2e;
+            }
+            v_2e *= vg * vg;
+        }
+    }
+
+    
+    // delete c
+
+    for (int vg = 1; vg <= V; vg++)
+    {
+        for (int eg = 0; eg <= vg * vg; eg++)
+        {
+            for (int i = 0; i < vg; i++) {
+                delete(c[vg][eg][i]);
+            }
+            delete(c[vg][eg]);
+        }
+        delete(c[vg]);
+    }
+    delete(c);
+
+    
+    //calculate the final result
+
+    long double** reachable = new long double*[V + 1];
+    for (int vg = 1; vg <= V; vg++)
+    {
+        reachable[vg] = new long double[vg * vg + 1];
+        for (int eg = 0; eg <= vg * vg; eg++)
+        {
+            reachable[vg][eg] = 0.0;
+            for (int i = 0; i < vg; i++)
+            {
+                reachable[vg][eg] += e[vg][eg][i];
+            }
+            if (reachable[vg][eg] > static_cast<long double>(vg))
+            {
+                std::cout << vg << " " << eg << " " << reachable[vg][eg] << "\n";
+            }
+        }
+    }
+
+    
+    //delete e and reachable
+    for (int vg = 1; vg <= V; vg++)
+    {
+        for (int eg = 0; eg <= vg * vg; eg++)
+        {
+            delete(e[vg][eg]);
+        }
+        delete(e[vg]);
+        delete(reachable[vg]);
+    }
+    delete(e);
+    delete(reachable);
+
+    
     return 0;
 }
