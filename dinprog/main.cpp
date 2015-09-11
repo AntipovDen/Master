@@ -1,12 +1,30 @@
 #include <iostream>
 #include <fstream>
 #include <cmath>
+#include <cstdlib>
 
-#define V2 400
-#define V 20
-
-int main()
+int main(int argc, char* argv[])
 {
+    int V;
+    if (argc == 1)
+    {
+        V = 20;
+    }
+    else if (argc == 2)
+    {
+        V = atoi(argv[1]);
+        if (V == 0)
+        {
+            std::cout << "Usage: " << argv[0] << " [number of vertices = 20]\n";
+        }
+    }
+    else
+    {
+        std::cout << "Usage: " << argv[0] << " [number of vertices = 20]\n";
+        return 0;
+    }
+    int V2 = V * V;
+
     //calculate combination n of k for n = 0..400, k = 0..n
     double** comb = new double*[V2 + 1];
     for (int n = 0; n <= V2; n++)
@@ -153,7 +171,8 @@ int main()
     }
     delete(s);
 
-
+    //open file for C
+    std::ofstream c_file("c.out");
 
     //calculate C(vg, eg, i, l)
     long double**** c = new long double***[V + 1];
@@ -177,11 +196,14 @@ int main()
                             vvvl_ee /= vvvl;
                         }
                     }
+                    c[vg][eg][i][l] += a[vg][vg][i][l][eg];
+                    c_file << c[vg][eg][i][l] << " ";
                 }
+                c_file << std::endl;
             }
         }
     }
-
+    c_file.close();
     
     //delete a
     for (int vg = 1; vg <= V; vg++)
@@ -202,7 +224,16 @@ int main()
     }
     delete(a);
 
-    
+    //delete combinations
+    for (int n = 0; n <= V2; n++)
+    {
+        delete(comb[n]);
+    }
+    delete(comb);
+
+    //open file for E
+    std::ofstream e_file("e.out");
+
     //calculate E(i)
 
     long double*** e = new long double**[V + 1];
@@ -221,11 +252,13 @@ int main()
                     e[vg][eg][i] += c[vg][eg][i][l] * l;
                 }
                 e[vg][eg][i] /= v_2e;
+                e_file << e[vg][eg][i] << " ";
             }
+            e_file << "\n";
             v_2e *= vg * vg;
         }
     }
-
+    e_file.close();
     
     // delete c
 
@@ -245,23 +278,19 @@ int main()
     
     //calculate the final result
 
-    long double** reachable = new long double*[V + 1];
-    for (int vg = 1; vg <= V; vg++)
-    {
-        reachable[vg] = new long double[vg * vg + 1];
-        for (int eg = 0; eg <= vg * vg; eg++)
-        {
-            reachable[vg][eg] = 0.0;
-            for (int i = 0; i < vg; i++)
-            {
-                reachable[vg][eg] += e[vg][eg][i];
-            }
-            if (reachable[vg][eg] > static_cast<long double>(vg))
-            {
-                std::cout << vg << " " << eg << " " << reachable[vg][eg] << "\n";
-            }
-        }
-    }
+//    long double** reachable = new long double*[V + 1];
+//    for (int vg = 1; vg <= V; vg++)
+//    {
+//        reachable[vg] = new long double[vg * vg + 1];
+//        for (int eg = 0; eg <= vg * vg; eg++)
+//        {
+//            reachable[vg][eg] = 0.0;
+//            for (int i = 0; i < vg; i++)
+//            {
+//                reachable[vg][eg] += e[vg][eg][i];
+//            }
+//        }
+//    }
 
     
     //delete e and reachable
@@ -272,10 +301,10 @@ int main()
             delete(e[vg][eg]);
         }
         delete(e[vg]);
-        delete(reachable[vg]);
+//        delete(reachable[vg]);
     }
     delete(e);
-    delete(reachable);
+//    delete(reachable);
 
     
     return 0;
