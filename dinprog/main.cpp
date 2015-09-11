@@ -2,8 +2,8 @@
 #include <fstream>
 #include <cmath>
 
-#define V2 169
-#define V 13
+#define V2 400
+#define V 20
 
 int main()
 {
@@ -64,8 +64,8 @@ int main()
                 for (int e0 = l; e0 <= V2; e0++)
                 {
                     s[v][l][m][e0 - l] = 0.0;
-                    long double m_pow = pow(m, l);
-                    long double lv_pow = pow(lv, e0 - l);
+                    long double m_pow = powl(m, l);
+                    long double lv_pow = powl(lv, e0 - l);
                     for (int ef = l; ef <= e0; ef++)
                     {
                         s[v][l][m][e0 - l] += lv_pow * m_pow * comb[e0][ef] * stirling[ef][l];
@@ -171,7 +171,7 @@ int main()
                     for (int v = l + i; v < vg; v++)
                     {
                         long double vvvl = (vg - v) * (vg + l);
-                        long double vvvl_ee = pow(vvvl, eg);
+                        long double vvvl_ee = powl(vvvl, eg);
                         for (int e = 0; e <= eg; e++) {
                             c[vg][eg][i][l] += a[vg][v][i][l][e] * vvvl_ee * comb[eg][e];
                             vvvl_ee /= vvvl;
