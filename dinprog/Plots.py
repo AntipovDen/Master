@@ -3,7 +3,7 @@ __author__ = 'dantipov'
 from matplotlib import pyplot as plt
 from matplotlib.pylab import savefig
 
-e1 = [[float(i) for i in s.split(' ')[:-1]] for s in open("e.out").readlines()]
+e1 = [[float(i) for i in s.split(' ')[:-1]] for s in open("data/e.out").readlines()]
 e = [[]]
 
 last = 0;
@@ -17,6 +17,8 @@ while (last != len(e1)):
         last += 1
         if last == len(e1):
             break
+
+
 
 for i in range(20):
     x = [j for j in range(1, 201)]

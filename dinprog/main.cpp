@@ -106,14 +106,15 @@ int main(int argc, char* argv[])
     long double***** a = new long double****[V + 1];
     for (int vg = 1; vg <= V; vg++)
     {
+        int eg = vg * vg;
         a[vg] = new long double***[vg + 1];
 
         //a(vg, 1, 0, 1, e) = 1
 
         a[vg][1] = new long double**[1];
         a[vg][1][0] = new long double*[2];
-        a[vg][1][0][1] = new long double[V2 + 1];
-        for (int e = 0; e <= V2; e++)
+        a[vg][1][0][1] = new long double[eg + 1];
+        for (int e = 0; e <= eg; e++)
         {
             a[vg][1][0][1][e] = 1.0;
         }
@@ -126,8 +127,8 @@ int main(int argc, char* argv[])
             a[vg][v][0] = new long double*[v + 1];
             for (int l = 1; l <= v; l++)
             {
-                a[vg][v][0][l] = new long double[V2 + 1];
-                for (int e = 0; e <= V2; e++)
+                a[vg][v][0][l] = new long double[eg + 1];
+                for (int e = 0; e <= eg; e++)
                 {
                     a[vg][v][0][l][e] = 0.0;
                 }
@@ -139,14 +140,18 @@ int main(int argc, char* argv[])
                 a[vg][v][i] = new long double*[v - i  + 1];
                 for (int l = 1; l <= v - i; l++)
                 {
-                    a[vg][v][i][l] = new long double[V2 + 1];
-                    for (int e = 0; e <= V2; e++) {
+                    a[vg][v][i][l] = new long double[eg + 1];
+                    for (int e = 0; e <= eg; e++) {
                         a[vg][v][i][l][e] = 0.0;
                         for (int m = 1; m <= v - l - i + 1; m++)
-                            for (int e0 = l; e0 < e; e0++)
-                            {
-                                a[vg][v][i][l][e] += a[vg][v - l][i - 1][m][e - e0] * comb[vg - v + l][l] * comb[e][e0] * s[v][l][m][e0 - l];
+                        {
+                            for (int e0 = l; e0 <= e; e0++) {
+                                a[vg][v][i][l][e] +=
+                                        a[vg][v - l][i - 1][m][e - e0] * comb[vg - v + l][l] * comb[e][e0] *
+                                        s[v][l][m][e0 - l];
+
                             }
+                        }
                     }
                 }
             }
@@ -172,7 +177,7 @@ int main(int argc, char* argv[])
     delete(s);
 
     //open file for C
-    std::ofstream c_file("c.out");
+    std::ofstream c_file("data/c.out");
 
     //calculate C(vg, eg, i, l)
     long double**** c = new long double***[V + 1];
@@ -232,7 +237,7 @@ int main(int argc, char* argv[])
     delete(comb);
 
     //open file for E
-    std::ofstream e_file("e.out");
+    std::ofstream e_file("data/e.out");
 
     //calculate E(i)
 
