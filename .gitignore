@@ -3,4 +3,8 @@
 *.aux
 *.pdf
 *.backup
+
+
+#Computation results
 *.out
+*.png

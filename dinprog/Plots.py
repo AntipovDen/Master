@@ -18,18 +18,17 @@ while (last != len(e1)):
         if last == len(e1):
             break
 
-
-
+y = [0] * 200
 for i in range(20):
     x = [j for j in range(1, 201)]
-    y = [e[20][j][i] for j in range(200)]
+    y = [e[20][j][i] + y[j] for j in range(200)]
     plt.figure(1)
     plt.subplot(111)
     plt.plot(x, y, 'bo')
     plt.title("reachable vertices, v = 20, max depth =" + str(i))
     plt.xlabel("edges")
     plt.ylabel("reachable vertices")
-    savefig("data/reachable_i" + str(i) + ".png")
+    savefig("data/reachable_i_le" + str(i) + ".png")
     plt.clf()
 
 for i in range(1, 21):
