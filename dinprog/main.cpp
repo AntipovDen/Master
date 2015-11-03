@@ -86,7 +86,7 @@ int main(int argc, char* argv[])
                     long double lv_pow = powl(lv, e0 - l);
                     for (int ef = l; ef <= e0; ef++)
                     {
-                        s[v][l][m][e0 - l] += lv_pow * m_pow * comb[e0][ef] * stirling[ef][l];
+                        s[v][l][m][e0 - l] += lv_pow * m_pow;// * comb[e0][ef] * stirling[ef][l];
                         m_pow *= m;
                         lv_pow /= lv;
                     }
@@ -94,6 +94,17 @@ int main(int argc, char* argv[])
             }
         }
     }
+
+    std::ofstream s_file("data/s.out");
+    for (int v = 0; v <= V; v++)
+        for (int l = 0; l <= v; l++)
+            for (int m = 0; m <= v - l; m++) {
+                for (int e = l; e <= V2; e++)
+                    s_file << s[v][l][m][e - l] << ' ';
+                s_file << '\n';
+            }
+    s_file.close();
+    return 0;
 
     //delete stirling numbers
     for (int n = 0; n <= V2; n++)
@@ -159,6 +170,16 @@ int main(int argc, char* argv[])
     }
     //seems like i did it!
 
+//    std::ofstream a_file("data/a.out");
+//    for (int v = 0; v <= V; v++)
+//        for (int i = 0; i < v; i++)
+//            for (int l = 1; l <= v - i; l++) {
+//                for (int e = 0; e <= V * V; e++)
+//                    a_file << a[V][v][i][l][e] << ' ';
+//                a_file << '\n';
+//            }
+//    a_file.close();
+//    return 0;
 
     
     //delete s

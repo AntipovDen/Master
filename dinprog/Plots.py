@@ -3,7 +3,7 @@ __author__ = 'dantipov'
 from matplotlib import pyplot as plt
 from matplotlib.pylab import savefig
 
-e1 = [[float(i) for i in s.split(' ')[:-1]] for s in open("data/e.out").readlines()]
+e1 = [[float(i) for i in s.split()] for s in open("data/e.out").readlines()]
 e = [[]]
 
 last = 0;
@@ -17,6 +17,12 @@ while (last != len(e1)):
         last += 1
         if last == len(e1):
             break
+
+x = [i for i in range(1, len(e[20]) + 1)]
+y = [sum(i) for i in e[20]]
+plt.plot(x, y, 'b-')
+plt.show()
+exit(0)
 
 y = [0] * 200
 for i in range(20):
