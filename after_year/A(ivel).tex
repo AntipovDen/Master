@@ -1,0 +1,56 @@
+\documentclass[a4paper]{article}
+
+
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{amsmath}
+
+\begin{document}
+
+Let's evaluate $B(l, m, e)$ that is number of ways to connect $m$ vertices from $V_{i-1}$ to $l$ vertices from $V_i$ using $e$ forward edges so that every vertex from $V_i$ has at least one incoming edge. Let's do it using Stirling's numbers of second kind $S(n, k)$. We can divide all the $e$ edges in $l$ nonempty groups in $S(e, l)$ ways. Edges in one group come to the same vertex from $V_i$ and we can associate each group of edges with one of the verticies in $l!$ ways. Finally for each edge we can choose starting vertex in $m$ ways. For $e$ edges there will be $m^e$ ways.
+
+As a result we have:
+$$B(l, m, e) = S(e, l) m^e l! $$
+
+Using the exact formula for Stirling's numbers of second kind:
+
+$$B(l, m, e) = m^e \sum_{k = 0}^{l} (-1)^{l-k} k^e {l \choose k}$$
+
+Now we can put this into the statement for $A(i, v, e, l)$:
+
+\begin{align*}
+A(i, v, e, l) = & \sum_{m = 1}^{v - l}\sum_{e_f = l}^{e}\sum_{e_b = 0}^{e - e_f} A(i - 1, v - l, e - (e_f + e_b), m) B(l, m, e_f) (lv)^{e_b} \\
+& {e \choose e_f + e_b} {e_f + e_b \choose e_f} {V - v + l \choose l} = \\ 
+= & \sum_{m = 1}^{v - l}\sum_{e_f = l}^{e}\sum_{e_b = 0}^{e - e_f} A(i - 1, v - l, e - (e_f + e_b), m) (lv)^{e_b} \\
+& {e \choose e_f + e_b} {e_f + e_b \choose e_f} {V - v + l \choose l} m^{e_f} \sum_{k = 0}^{l} (-1)^{l - k} {l \choose k} k^{e_f} = \\
+= & \sum_{m = 1}^{v - l}\sum_{e_f = l}^{e}\sum_{e_b = 0}^{e - e_f}\sum_{k = 0}^{l} (-1)^{l - k} A(i - 1, v - l, e - (e_f + e_b), m) \\
+&  {e \choose e_f + e_b} {e_f + e_b \choose e_f} {V - v + l \choose l} {l \choose k} (mk)^{e_f} (lv)^{e_b} 
+\end{align*}
+
+Now let $e_o$ be $e_b + e_f$ -- the number of edges that are used in the outward layer $V_i$. It will has values from $l$ to $e$. Then $e_b$ will be from $0$ to $e_o - l$:
+
+\begin{align*}
+A(i, v, e, l) = & \sum_{m = 1}^{v - l}\sum_{e_o = l}^{e}\sum_{e_b = 0}^{e_o - l}\sum_{k = 0}^{l} (-1)^{l - k} A(i - 1, v - l, e - e_o, m) \\
+&  {e \choose e_o} {e_o \choose e_b} {V - v + l \choose l} {l \choose k} (mk)^{e_o - e_b} (lv)^{e_b} = \\
+= & \sum_{m = 1}^{v - l}\sum_{e_o = l}^{e}  A(i - 1, v - l, e - e_o, m) {V - v + l \choose l} {e \choose e_o} \\
+& \sum_{k = 0}^{l} (-1)^{l - k} {l \choose k} \sum_{e_b = 0}^{e_o - l} {e_o \choose e_b} (mk)^{e_o - e_b} (lv)^{e_b}
+\end{align*}
+
+The next step will be convolution of the last line:
+$$ \sum_{k = 0}^{l} (-1)^{l - k} {l \choose k} \sum_{e_b = 0}^{e_o - l} {e_o \choose e_b} (mk)^{e_o - e_b} (lv)^{e_b}$$
+
+Maybe it can be done using the equality for Stirling numbers:
+
+$$S(n + 1, k + 1) = \sum_{j = k}^{n} {n \choose j} S(j, k)$$
+
+Because if we'll swap summation order we will get something like right part of this equation:
+
+\begin{align*}
+& \sum_{k = 0}^{l} (-1)^{l - k} {l \choose k} \sum_{e_b = 0}^{e_o - l} {e_o \choose e_b} (mk)^{e_o - e_b} (lv)^{e_b} = \\
+& = m^{e_o} \sum_{e_b = 0}^{e_o - l} {e_0 \choose e_b} \left(\frac{lv}{m}\right)^{e_b} \sum_{k = 0}^{l} (-1)^{l - k} {l \choose k} k^{e_o - e_b} = \\
+& = (lv)^{e_0} \sum_{e_f = l}^{e_o} {e_o \choose e_f} \left(\frac{m}{lv}\right)^{e_f}\sum_{k = 0}^{l} (-1)^{l - k} {l \choose k} k^{e_f} = \\
+& = (lv)^{e_0} \sum_{e_f = l}^{e_o} {e_o \choose e_f} \left(\frac{m}{lv}\right)^{e_f} l! S(e_f, l) 
+\end{align*} 
+
+\end{document}
