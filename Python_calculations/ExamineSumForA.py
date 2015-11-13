@@ -52,8 +52,11 @@ def check_summands(v, i, l, e, file):
 
 
 
-max_max_cell = max_max_row = max_max_col = 0
+#max_max_cell = max_max_row = max_max_col = 0
 min_max_cell = min_max_row = min_max_col = 100
+min_cell_got_in = ()
+min_row_got_in = ()
+min_col_got_in = ()
 with open('data/a_summands.out', 'w') as f:
     for v in range(1, V + 1):
         for i in range(1, v):
@@ -61,13 +64,23 @@ with open('data/a_summands.out', 'w') as f:
                 for e in range(V ** 2):
                     if a[v][i][l][e] > 0.:
                         cur_max_cell, cur_max_row, cur_max_col = check_summands(v, i, l, e, f)
-                        max_max_cell = max(max_max_cell, cur_max_cell)
-                        max_max_row = max(max_max_row, cur_max_row)
-                        max_max_col = max(max_max_col, cur_max_col)
-                        min_max_cell = min(min_max_cell, cur_max_cell)
-                        min_max_row = min(min_max_row, cur_max_row)
-                        min_max_col = min(min_max_col, cur_max_col)
+                        # max_max_cell = max(max_max_cell, cur_max_cell)
+                        # max_max_row = max(max_max_row, cur_max_row)
+                        # max_max_col = max(max_max_col, cur_max_col)
+                        if min_max_cell > cur_max_cell:
+                            min_max_cell = cur_max_cell
+                            min_cell_got_in = (v, i, l, e)
+                        if min_max_row > cur_max_row:
+                            min_max_row = cur_max_row
+                            min_row_got_in = (v, i, l, e)
+                        if min_max_col > cur_max_col:
+                            min_max_col = cur_max_col
+                            min_col_got_in = (v, i, l, e)
 
 with open('data/max_min_summands.out', 'w') as f:
-    f.write(str(max_max_cell) + ' ' + str(max_max_row) + ' ' + str(max_max_col) + '\n')
+    # f.write(str(max_max_cell) + ' ' + str(max_max_row) + ' ' + str(max_max_col) + '\n')
     f.write(str(min_max_cell) + ' ' + str(min_max_row) + ' ' + str(min_max_col) + '\n')
+    f.write(str(min_cell_got_in) + '\n')
+    f.write(str(min_row_got_in) + '\n')
+    f.write(str(min_col_got_in))
+    f.flush()
