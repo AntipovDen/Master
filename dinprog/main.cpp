@@ -86,7 +86,11 @@ int main(int argc, char* argv[])
                     long double lv_pow = powl(lv, e0 - l);
                     for (int ef = l; ef <= e0; ef++)
                     {
-                        s[v][l][m][e0 - l] += lv_pow * m_pow;// * comb[e0][ef] * stirling[ef][l];
+                        //TODO: remove tmp
+                        long double tmp = m_pow * lv_pow;// * comb[e0][ef] * stirling[ef][l];
+                        if (std::isnan(tmp))
+                            std::cout << tmp << ' ' << lv << '\n' ;
+                        s[v][l][m][e0 - l] += m_pow * lv_pow;// * comb[e0][ef] * stirling[ef][l];
                         m_pow *= m;
                         lv_pow /= lv;
                     }
