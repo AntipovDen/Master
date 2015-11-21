@@ -1,11 +1,36 @@
 from math import isnan
 from threading import Thread, Event
+from matplotlib import pyplot as plt
 
 __author__ = 'dantipov'
 
 
-#TODO: you're fucking idiot! Y r u conting with V=40? see the dependency for V = 5..25
 V = 40
+
+# just building one plot
+with open('data/a_summands.out') as f:
+    results = [(float(i.split()[0]), float(i.split()[1]), float(i.split()[2])) for i in f.readlines()]
+    cells = [r[0] for r in results]
+    rows = [r[1] for r in results]
+    columns = [r[2] for r in results]
+    n = [i for i in range(36)]
+
+    plt.plot(n, cells, 'bo', label='cells')
+    plt.xlabel('n')
+    plt.ylabel('max summand')
+    plt.show()
+
+    plt.plot(n, rows, 'ro', label='rows')
+    plt.xlabel('n')
+    plt.ylabel('max summand')
+    plt.show()
+
+    plt.plot(n, columns, 'go', label='columns')
+    plt.xlabel('n')
+    plt.ylabel('max summand')
+    plt.show()
+exit(0)
+
 
 with open('data/Combinations.dat', 'r') as f:
     c = [[int(i) for i in s.split()] for s in [f.readline() for j in range(V ** 2 + 1)]]
