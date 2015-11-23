@@ -6,8 +6,9 @@ from math import log
 
 n = 20
 
-f = lambda x: sum(x)
 
+def f(x):
+    return sum(x)
 
 
 def flip(x, flips, allowed_to_flip):
@@ -26,27 +27,34 @@ def flip(x, flips, allowed_to_flip):
         flippables -= 1
     return flipped
 
+
 def mutate(x, flipped, res):
     f1 = flip(x, (n - res) // 2, [1 - i for i in flipped])
     f2 = flip(x, (n - res) // 2, flipped.copy())
     for i in range(n):
         flipped[i] = f1[i] or f2[i]
 
-def optimize(x, max_result, flipped, unflipped, cur_res):
+
+calls = 0
+
+
+def opt(x, flipped, unflipped, max_res, cur_res):
+    if max_res == cur_res:
+        return
     x1 = x.copy()
-    x2 = x.copy()
-    x1_flipped = flip(x1, (max_result - cur_res) // 2, flipped.copy())
-    x2_flipped = flip(x2, (max_result - cur_res) // 2, unflipped.copy())
+    x1_flipped = flip(x1, (max_res - cur_res) // 2, flipped.copy())
     x1_unflipped = [flipped[i] - x1_flipped[i] for i in range(n)]
-    x2_unflipped = [unflipped[i] - x2_flipped[i] for i in range(n)]
-    optimize(x1, (f(x1) + max_result) // 2, x1_flipped, x1_unflipped, f(x1))
-    optimize(x2, (f(x2) + max_result) // 2, x2_flipped, x2_unflipped, f(x2))
+    opt(x1, x1_flipped, x1_unflipped, (cur_res + max_res) // 2, f(x1))
+    x2 = x.copy()
+    x2_flipped = flip(x2, (max_res - cur_res) // 2, unflipped.copy())
+    x2_unflipped = [unflipped[i] - x1_flipped[i] for i in range(n)]
+    opt(x2, x2_flipped, x2_unflipped, (cur_res + max_res) // 2, f(x2))
     for i in range(n):
         if flipped[i]:
             x[i] = x1[i]
         elif unflipped[i]:
             x[i] = x2[i]
-
+    calls += 2
 
 
 def run():
@@ -75,7 +83,17 @@ def run():
 
     return iters
 
+
+def run1():
+    global calls
+    calls = 1
+    x = [randint(0, 1) for _ in range(n)]
+    opt(x, [0] * n, [1] * n, n, f(x))
+    return calls
+
 runs = 100
+print(sum([run1() for r in range(runs)]))
+
 res = []
 ns = [i for i in range(5, 40)]
 for n in ns:
