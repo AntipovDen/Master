@@ -23,12 +23,20 @@ def is_monotone(arr):
             prev_max = arr[i]
     return True
 
+
+
+max_row_of_V_e = [[[-2] * V for j in range(V ** 2 + 1)] for i in range(V + 1)]
+
 for vg in range(1, V + 1):
     for v in range(2, vg + 1):
         for i in range(1, v):
             for l in range(1, v - i + 1):
-                if (not is_monotone(max_row_numbers[vg][v][i][l])):
-                    print(vg, v, i, l)
-                    print(max_row_numbers[vg][v][i][l])
+                for e in range(l, vg ** 2 + 1):
+                    cur = max_row_numbers[vg][v][i][l][e - l]
+                    if (max_row_of_V_e[vg][e][v - i - l] == -2):
+                        max_row_of_V_e[vg][e][v - i - l] = cur
+                    elif (cur != max_row_of_V_e[vg][e][v - i - l]):
+                        print(vg, v, i, l , e)
+
 
 
