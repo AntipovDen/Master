@@ -39,6 +39,7 @@ calls = 0
 
 
 def opt(x, flipped, unflipped, max_res, cur_res):
+    global calls
     if max_res == cur_res:
         return
     x1 = x.copy()
@@ -47,7 +48,7 @@ def opt(x, flipped, unflipped, max_res, cur_res):
     opt(x1, x1_flipped, x1_unflipped, (cur_res + max_res) // 2, f(x1))
     x2 = x.copy()
     x2_flipped = flip(x2, (max_res - cur_res) // 2, unflipped.copy())
-    x2_unflipped = [unflipped[i] - x1_flipped[i] for i in range(n)]
+    x2_unflipped = [unflipped[i] - x2_flipped[i] for i in range(n)]
     opt(x2, x2_flipped, x2_unflipped, (cur_res + max_res) // 2, f(x2))
     for i in range(n):
         if flipped[i]:
@@ -86,22 +87,27 @@ def run():
 
 def run1():
     global calls
-    calls = 1
     x = [randint(0, 1) for _ in range(n)]
-    opt(x, [0] * n, [1] * n, n, f(x))
+    cur_res = f(x)
+    calls = 1
+    if cur_res < n:
+        flipped = flip(x, n - cur_res, [1] * n)
+        cur_res = f(x)
+        calls = 2
+        if cur_res < n:
+            opt(x, flipped, [1 - i for i in flipped], n, cur_res)
     return calls
 
 runs = 100
-print(sum([run1() for r in range(runs)]))
+#print(sum([run1() for r in range(runs)]))
+
 
 res = []
-ns = [i for i in range(5, 40)]
+ns = [i for i in range(5, 100)]
 for n in ns:
-    res.append(sum([run() for r in range(runs)]) / runs)
+    res.append(sum([run1() for r in range(runs)]) / runs)
     print(res[-1])
 
 plt.plot(ns, res, 'bo',
-         ns, [n * n for n in ns], 'r-',
-         ns, [n * log(n) ** 2 for n in ns], 'g-',
-         ns, [n * log(n) for n in ns], 'b-')
+         ns, [n for n in ns], 'r-')
 plt.show()
