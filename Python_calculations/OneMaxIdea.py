@@ -103,11 +103,10 @@ runs = 100
 
 
 res = []
-ns = [i for i in range(5, 100)]
-for n in ns:
-    res.append(sum([run1() for r in range(runs)]) / runs)
-    print(res[-1])
+ns = [i for i in range(5, 1000)]
 
-plt.plot(ns, res, 'bo',
-         ns, [n for n in ns], 'r-')
-plt.show()
+with open("my_one_max_solution.out", 'w') as out:
+    for n in ns:
+        res.append(sum([run1() for r in range(runs)]) / runs)
+        out.write(str(res[-1]) + ' ')
+        out.flush()
