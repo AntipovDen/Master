@@ -105,8 +105,6 @@ runs = 100
 res = []
 ns = [i for i in range(5, 1000)]
 
-with open("my_one_max_solution.out", 'w') as out:
-    for n in ns:
-        res.append(sum([run1() for r in range(runs)]) / runs)
-        out.write(str(res[-1]) + ' ')
-        out.flush()
+with open("data/my_one_max_solution.out", 'r') as file:
+    plt.plot(ns, [float(i) for i in file.readline().split()], 'bo', ns, [1.2 * i for i in ns], 'r-')
+plt.show()
