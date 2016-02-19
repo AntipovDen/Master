@@ -27,92 +27,36 @@ class Vertex:
     def __ge__(self, other):
         return self.mark >= other.mark
 
-#pop the min element from the heap and edit references to heap
-def pop(heap, placeInHeap):
-    if len(heap) == 1:
-        return heap.pop()
-    res = heap[0]
-    placeInHeap[res.number] = -1
-    heap[0] = heap.pop()
-    placeInHeap[heap[0].number] = 0
-    cur = 0;
-    while (cur + 1) * 2 < len(heap):
-        next2 = (cur + 1) * 2
-        next1 = next2 - 1
-        if next2 < len(heap):
-            if heap[next1] < heap[next2]:
-                if heap[cur] > heap[next1]:
-                    heap[cur], heap[next1] = heap[next1], heap[cur]
-                    placeInHeap[heap[cur].number] = cur
-                    placeInHeap[heap[next1].number] = next1
-                    cur = next1
-                else:
-                    break
-            else:
-                if heap[cur] > heap[next2]:
-                    heap[cur], heap[next2] = heap[next2], heap[cur]
-                    placeInHeap[heap[cur].number] = cur
-                    placeInHeap[heap[next2].number] = next2
-                    cur = next2
-                else:
-                    break
-        else:
-            if heap[cur] > heap[next1]:
-                heap[cur], heap[next1] = heap[next1], heap[cur]
-                placeInHeap[heap[cur].number] = cur
-                placeInHeap[heap[next1].number] = next1
-                cur = next1
-            else:
-                break
-    return res
-
-#relax the vertex in the heap
-def relax(heap, placeInHeap, vertexNum, relaxValue):
-    curV = placeInHeap[vertexNum]
-    heap[curV].mark = relaxValue
-    while curV > 0 and heap[curV] < heap[curV // 2]:
-        heap[curV], heap[curV // 2] = heap[curV // 2], heap[curV]
-        placeInHeap[heap[curV].number] = curV
-        placeInHeap[heap[curV // 2].number] = curV // 2
-
 #this function takes number of vertexes and array of edges in format (vFrom, vTo, weight)
 #and returns number of relaxed edges and the distance from the start vertex
 def dijkstra(v, edges):
     graph = [[] for i in range(v)]
-
     for edge in edges:
         graph[edge[0]].append(Edge(edge[1], edge[2]))
 
-    #array of vertexes marks
-    marks = [0] + [float('inf')] * (v - 1)
-    #heap of vertexes. On each step of algorithm we pop the vertex
-    # with minimal mark and decrease keys of all relaxed vertexes
-    heap = [Vertex(float('inf'), i) for i in range(v)]
-    heap[0].mark = 0
-    #link to the vertex in the heap
-    placeInHeap = [i for i in range(v)]
+    vertices = [Vertex(0., 0)] + [Vertex(float('inf'), i) for i in range(1, v)]
+    left_vertices = {i for i in range(1, v)}
 
-    #number of relaxed edges
     relaxed = 0
-    maxMark = 0
-    #algorithm step;
-    while heap and heap[0] != float('inf'):
-        curV = pop(heap, placeInHeap).number
 
-        for edge in graph[curV]:
-            relaxValue = marks[curV] + edge.weight
+    cur_vertex = Vertex(0., 0)
+    while True :
+        for edge in graph[cur_vertex.number]:
+            relaxValue = cur_vertex.mark + edge.weight
 
-            if marks[edge.to] > relaxValue:
-                marks[edge.to] = relaxValue
-                if placeInHeap[edge.to] != -1:
-                    relax(heap, placeInHeap, edge.to, relaxValue)
+            if vertices[edge.to] > relaxValue:
+                vertices[edge.to] = relaxValue
                 relaxed += 1
 
-    for mark in marks:
-        if mark != float('inf') and mark > maxMark:
-            maxMark = mark
+        if len(left_vertices) > 0:
+            cur_vertex = min([vertices[i] for i in left_vertices])
+            left_vertices.remove(cur_vertex)
+            if cur_vertex.mark == float('inf'):
+                break
+        else:
+            break
 
-    return [maxMark, relaxed];
+    return relaxed
 
 
 #operations for EA testing
@@ -175,52 +119,50 @@ def statistics(v, edges, maxWeight):
 def optimize(vertexes, edges, maxWeight):
     graph = initGraph(edges, maxWeight)
     f = 0
-    results = []
     iterations = 0
     while f != edges:
         nextGen = graph.copy()
         mutate(nextGen, vertexes, maxWeight)
-        result = dijkstra(vertexes, nextGen)
-        relaxed = result[1]
+        relaxed = dijkstra(vertexes, nextGen)
+
         if relaxed >= f:
             graph = nextGen
             f = relaxed
-#            results.append(statistics(vertexes, graph, maxWeight) + result)
-#        else:
-#            results.append(results[-1])
+        else:
+            results.append(results[-1])
         iterations += 1
 
     return iterations
 
-
-f = open('const_edges_2.out', 'w')
-runs = 500
-e = [10, 20, 30]
-maxWeight = 15
-results = []
-for E in e:
-    results.append([])
-    f.write(str(E))
-    f.write(' ')
-    f.flush()
-    for V in range(E // 2, E + 2):
-        print('V:', V)
-        results[-1].append(0)
-        for i in range(runs):
-            results[-1][-1] += optimize(V, E, maxWeight) / runs
-        f.write(str(results[-1][-1]))
-        f.write(' ')
-        f.flush()
-    print(E, 'ended')
-    f.write('\n')
-
-plt.plot([V for V in range(e[0] // 2, e[0] + 2)], results[0], 'b-', label='10 edges')
-plt.plot([V for V in range(e[1] // 2, e[1] + 2)], results[1], 'r-', label='20 edges')
-plt.plot([V for V in range(e[2] // 2, e[2] + 2)], results[2], 'g-', label='30 edges')
-plt.xlabel("Vertices")
-plt.ylabel("Iterations")
-plt.legend(loc=2)
-plt.show()
+#
+# f = open('const_edges_2.out', 'w')
+# runs = 500
+# e = [10, 20, 30]
+# maxWeight = 15
+# results = []
+# for E in e:
+#     results.append([])
+#     f.write(str(E))
+#     f.write(' ')
+#     f.flush()
+#     for V in range(E // 2, E + 2):
+#         print('V:', V)
+#         results[-1].append(0)
+#         for i in range(runs):
+#             results[-1][-1] += optimize(V, E, maxWeight) / runs
+#         f.write(str(results[-1][-1]))
+#         f.write(' ')
+#         f.flush()
+#     print(E, 'ended')
+#     f.write('\n')
+#
+# plt.plot([V for V in range(e[0] // 2, e[0] + 2)], results[0], 'b-', label='10 edges')
+# plt.plot([V for V in range(e[1] // 2, e[1] + 2)], results[1], 'r-', label='20 edges')
+# plt.plot([V for V in range(e[2] // 2, e[2] + 2)], results[2], 'g-', label='30 edges')
+# plt.xlabel("Vertices")
+# plt.ylabel("Iterations")
+# plt.legend(loc=2)
+# plt.show()
 
 # f = open("data/const_vertexes_2.txt", 'w')
 # runs = 500
@@ -250,8 +192,8 @@ plt.show()
 # plt.ylabel("Iterations")
 # plt.legend(loc=2)
 # plt.show()
-
-exit(0)
+#
+# exit(0)
 
 def average(x, y, proportion):
     return list(map(lambda a, b: (a * proportion + b) / (proportion + 1), x, y))
@@ -269,7 +211,7 @@ def mergeResults(results, curResults, weights):
 for V in [5, 10, 15]:
     for E in [V, 2 * V, V ** 2 // 2]:
         print("V:", V, 'E:', E);
-        runs = 2000
+        runs = 2
         results = []
         weights = []
         f = open("data/v" + str(V) + "e" + str(E) + "_1.txt", 'w')

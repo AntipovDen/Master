@@ -60,7 +60,7 @@ for v in range(5, 27):
     plt.show()
 
 
-vertices = 50
+vertices = 5066
 max_edges = 400
 edges = [e for e in range(max_edges)]
 
