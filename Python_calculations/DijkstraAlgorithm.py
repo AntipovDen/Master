@@ -3,13 +3,17 @@ __author__ = 'Den'
 import random
 from math import sqrt, ceil
 from matplotlib import pyplot as plt
+from random import randrange
 
-#Graph edge class
+
+# Graph edge class
 class Edge:
     def __init__(self, targetVertex, weight):
         self.to = targetVertex
         self.weight = weight
 
+
+# Vertex class that is comparable by the distance to it that is kept in the "mark" field
 class Vertex:
     def __init__(self, mark, number):
         self.mark = mark
@@ -27,12 +31,14 @@ class Vertex:
     def __ge__(self, other):
         return self.mark >= other.mark
 
-#this function takes number of vertexes and array of edges in format (vFrom, vTo, weight)
-#and returns number of relaxed edges and the distance from the start vertex
+
+# this function takes number of vertices and array of edges in format (vFrom, vTo, weight)
+# and returns number of relaxed edges
 def dijkstra(v, edges):
     graph = [[] for i in range(v)]
     for edge in edges:
-        graph[edge[0]].append(Edge(edge[1], edge[2]))
+        if edge[0] != -1:
+            graph[edge[0]].append(Edge(edge[1], edge[2]))
 
     vertices = [Vertex(0., 0)] + [Vertex(float('inf'), i) for i in range(1, v)]
     left_vertices = {i for i in range(1, v)}
@@ -59,21 +65,22 @@ def dijkstra(v, edges):
     return relaxed
 
 
-#operations for EA testing
-def initGraph(e, maxWeight):
-    return [(1, 0, maxWeight)] * e
+# operations for EA
+def init_graph(e, max_weight):
+    return [(-1, -1, max_weight)] * e
 
-def mutate(edges, vertexes, maxWeight):
-    edges[random.randrange(len(edges))] = (random.randrange(vertexes), random.randrange(vertexes), random.randrange(maxWeight))
 
-#function take statistics about the graph:
-#1) number of vertexes that are reachable from the start vertex
-#2) number of edges that couldn't be reached from the start vertex
-#   but were mutated before
-#3) number of leaves
-#4) the max depth  in the graph
+def mutate(edges, vertices, max_weight):
+    edges[randrange(len(edges))] = (randrange(vertices), randrange(vertices), randrange(max_weight))
 
-def statistics(v, edges, maxWeight):
+
+# function take statistics about the graph:
+# 1) number of vertices that are reachable from the start vertex
+# 2) number of edges that couldn't be reached from the start vertex
+#    but were mutated before
+# 3) number of leaves
+# 4) the max depth  in the graph
+def statistics(v, edges, maxWeight):  #TODO: check the current statistics and modify them
     graph = [[] for i in range(v)]
 
     for edge in edges:
@@ -99,7 +106,7 @@ def statistics(v, edges, maxWeight):
                 depth = depthes[i]
 
     unreachableEdges = 0 # all edges - edges 1->0 - edges, reached by bfs
-    leaves = 0 #number of vertexes with only one input edge and no output edges
+    leaves = 0 #number of vertices with only one input edge and no output edges
 
     inputEdges = [0] * v
     outputEdges = [0] * v
@@ -115,130 +122,73 @@ def statistics(v, edges, maxWeight):
     return [reachable, unreachableEdges, leaves, depth]
 
 
-#EA run
-def optimize(vertexes, edges, maxWeight):
-    graph = initGraph(edges, maxWeight)
+
+run_number = 0
+# EA run
+# now it opimizes only with mutating edgges that are not in the connected components into the edges
+# that lead from connected component out of it
+def optimize(vertices, edges, max_weight):
+    global run_number
+    print("Run: ", run_number)
+    run_number += 1
+    graph = init_graph(edges, max_weight)
     f = 0
     iterations = 0
     while f != edges:
         nextGen = graph.copy()
-        mutate(nextGen, vertexes, maxWeight)
-        relaxed = dijkstra(vertexes, nextGen)
+        mutate(nextGen, vertices, max_weight)
+        relaxed = dijkstra(vertices, nextGen)
 
         if relaxed >= f:
             graph = nextGen
             f = relaxed
-        else:
-            results.append(results[-1])
         iterations += 1
 
     return iterations
 
-#
-# f = open('const_edges_2.out', 'w')
-# runs = 500
-# e = [10, 20, 30]
-# maxWeight = 15
-# results = []
-# for E in e:
-#     results.append([])
-#     f.write(str(E))
-#     f.write(' ')
-#     f.flush()
-#     for V in range(E // 2, E + 2):
-#         print('V:', V)
-#         results[-1].append(0)
-#         for i in range(runs):
-#             results[-1][-1] += optimize(V, E, maxWeight) / runs
-#         f.write(str(results[-1][-1]))
-#         f.write(' ')
-#         f.flush()
-#     print(E, 'ended')
-#     f.write('\n')
-#
-# plt.plot([V for V in range(e[0] // 2, e[0] + 2)], results[0], 'b-', label='10 edges')
-# plt.plot([V for V in range(e[1] // 2, e[1] + 2)], results[1], 'r-', label='20 edges')
-# plt.plot([V for V in range(e[2] // 2, e[2] + 2)], results[2], 'g-', label='30 edges')
-# plt.xlabel("Vertices")
-# plt.ylabel("Iterations")
-# plt.legend(loc=2)
-# plt.show()
+def optimize_simple(vertices, edges, max_weight):
+    global run_number
+    print("Run: ", run_number)
+    run_number += 1
+    graph = init_graph(edges, max_weight)
+    f = 0
+    iterations = 0
+    current_connected_component = {0}
+    no_change_iterations = 0
+    while f != edges:
+        if no_change_iterations > 1000000:
+            print(f)
+            print(current_connected_component)
+            print([e for e in graph if e[0] in current_connected_component])
+            exit(0)
+        iterations += 1
+        # nextGen = graph.copy()
 
-# f = open("data/const_vertexes_2.txt", 'w')
-# runs = 500
-# v = [5, 10,15]
-# maxWeight = 15
-# results = []
-# for V in v:
-#     results.append([])
-#     f.write(str(V))
-#     f.write(' ')
-#     f.flush()
-#     for E in range(V, V ** 2 // 2, (V // 5)): #range(V, V ** 2 // 2, 3):
-#         print('E:', E)
-#         results[-1].append(0)
-#         for i in range(runs):
-#             results[-1][-1] += optimize(V, E, maxWeight) / runs
-#         f.write(str(results[-1][-1]))
-#         f.write(' ')
-#         f.flush()
-#     print(V, 'ended')
-#     f.write('\n')
-#
-# plt.plot([E for E in range(v[0], v[0] ** 2 // 2, 1)], results[0], 'b-', label='5 verticies')
-# plt.plot([E for E in range(v[1], v[1] ** 2 // 2, 2)], results[1], 'r-', label='10 verticies')
-# plt.plot([E for E in range(v[2], v[2] ** 2 // 2, 3)], results[2], 'g-', label='15 verticies')
-# plt.xlabel("Edges")
-# plt.ylabel("Iterations")
-# plt.legend(loc=2)
-# plt.show()
-#
-# exit(0)
+        # mutation with lower probability
+        edge_number = randrange(edges)
+        v_from = randrange(vertices)
+        v_to = randrange(vertices)
+        if graph[edge_number][0] not in current_connected_component and v_from in current_connected_component and v_to not in current_connected_component:
+            graph[edge_number] = (v_from, v_to, max_weight)
+            current_connected_component.add(v_to)
+            f += 1
+            no_change_iterations = 0
+        else:
+            no_change_iterations += 1
+        # mutate(nextGen, vertices, maxWeight)
+        # relaxed = dijkstra(vertices, nextGen)
 
-def average(x, y, proportion):
-    return list(map(lambda a, b: (a * proportion + b) / (proportion + 1), x, y))
+        # if relaxed >= f:
+        #     graph = nextGen
+        #     f = relaxed
+        #
+    return iterations
 
-def mergeResults(results, curResults, weights):
-    for i in range(min(len(results), len(curResults))):
-        results[i] = average(results[i], curResults[i], weights[i])
-        weights[i] += 1
-
-    for i in range(len(results), len(curResults)):
-        results.append(curResults[i])
-        weights.append(1)
-
-
-for V in [5, 10, 15]:
-    for E in [V, 2 * V, V ** 2 // 2]:
-        print("V:", V, 'E:', E);
-        runs = 2
-        results = []
-        weights = []
-        f = open("data/v" + str(V) + "e" + str(E) + "_1.txt", 'w')
-        for run in range(runs):
-            mergeResults(results, optimize(V, E, V), weights);
-
-        for res in results:
-            f.write(str(res[0]))
-            f.write('\t')
-        f.write('\n')
-        for res in results:
-            f.write(str(res[1]))
-            f.write('\t')
-        f.write('\n')
-        for res in results:
-            f.write(str(res[2]))
-            f.write('\t')
-        f.write('\n')
-        for res in results:
-            f.write(str(res[3]))
-            f.write('\t')
-        f.write('\n')
-        for res in results:
-            f.write(str(res[4]))
-            f.write('\t')
-        f.write('\n')
-        for res in results:
-            f.write(str(res[5]))
-            f.write('\t')
-        f.write('\n')
+vertices = 1000
+edges = 100
+runs = 100
+max_weight = 100
+medium_res = sum([optimize_simple(vertices, edges, max_weight) for _ in range(runs)]) / runs
+print("Simple: ", medium_res)
+medium_res = sum([optimize(vertices, edges, max_weight) for _ in range(runs)]) / runs
+print("Real: ", medium_res)
