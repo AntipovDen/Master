@@ -45,18 +45,18 @@ def dijkstra(v, edges):
 
     relaxed = 0
 
-    cur_vertex = Vertex(0., 0)
+    cur_vertex = vertices[0]
     while True :
         for edge in graph[cur_vertex.number]:
             relaxValue = cur_vertex.mark + edge.weight
 
-            if vertices[edge.to] > relaxValue:
-                vertices[edge.to] = relaxValue
+            if vertices[edge.to].mark > relaxValue:
+                vertices[edge.to].mark = relaxValue
                 relaxed += 1
 
         if len(left_vertices) > 0:
             cur_vertex = min([vertices[i] for i in left_vertices])
-            left_vertices.remove(cur_vertex)
+            left_vertices.remove(cur_vertex.number)
             if cur_vertex.mark == float('inf'):
                 break
         else:
@@ -128,9 +128,9 @@ run_number = 0
 # now it opimizes only with mutating edgges that are not in the connected components into the edges
 # that lead from connected component out of it
 def optimize(vertices, edges, max_weight):
-    global run_number
-    print("Run: ", run_number)
-    run_number += 1
+    # global run_number
+    # print("Run: ", run_number)
+    # run_number += 1
     graph = init_graph(edges, max_weight)
     f = 0
     iterations = 0
@@ -140,6 +140,8 @@ def optimize(vertices, edges, max_weight):
         relaxed = dijkstra(vertices, nextGen)
 
         if relaxed >= f:
+            # if relaxed > f:
+            #     print("relaxed: {}".format(relaxed))
             graph = nextGen
             f = relaxed
         iterations += 1
@@ -147,20 +149,17 @@ def optimize(vertices, edges, max_weight):
     return iterations
 
 def optimize_simple(vertices, edges, max_weight):
-    global run_number
-    print("Run: ", run_number)
-    run_number += 1
+    # global run_number
+    # print("Run: ", run_number)
+    # run_number += 1
     graph = init_graph(edges, max_weight)
     f = 0
     iterations = 0
     current_connected_component = {0}
-    no_change_iterations = 0
+    # no_change_iterations = 0
     while f != edges:
-        if no_change_iterations > 1000000:
-            print(f)
-            print(current_connected_component)
-            print([e for e in graph if e[0] in current_connected_component])
-            exit(0)
+        # if no_change_iterations > 1000000:
+        #     exit(0)
         iterations += 1
         # nextGen = graph.copy()
 
@@ -172,23 +171,14 @@ def optimize_simple(vertices, edges, max_weight):
             graph[edge_number] = (v_from, v_to, max_weight)
             current_connected_component.add(v_to)
             f += 1
-            no_change_iterations = 0
-        else:
-            no_change_iterations += 1
-        # mutate(nextGen, vertices, maxWeight)
-        # relaxed = dijkstra(vertices, nextGen)
+        #     no_change_iterations = 0
+        # else:
+        #     no_change_iterations += 1
 
-        # if relaxed >= f:
-        #     graph = nextGen
-        #     f = relaxed
-        #
     return iterations
 
-vertices = 1000
-edges = 100
-runs = 100
-max_weight = 100
-medium_res = sum([optimize_simple(vertices, edges, max_weight) for _ in range(runs)]) / runs
-print("Simple: ", medium_res)
-medium_res = sum([optimize(vertices, edges, max_weight) for _ in range(runs)]) / runs
-print("Real: ", medium_res)
+runs = 10
+
+for V in [50, 100, 200, 400]:
+    for E in [V // 5, V // 4, V // 2, V - 1]:
+        print('V{}E{}:{}'.format(V, E, sum([optimize_simple(V, E, V) for _ in range(runs)]) / runs))
