@@ -2,7 +2,7 @@ __author__ = 'Den'
 
 import random
 from math import sqrt, ceil
-from matplotlib import pyplot as plt
+# from matplotlib import pyplot as plt
 from random import randrange
 
 
@@ -146,11 +146,11 @@ def optimize(vertices, edges, max_weight):
 
     return iterations
 
-def optimize_simple(vertices, edges, max_weight):
+def optimize_simple(vertices, edges):
     global run_number
     print("Run: ", run_number)
     run_number += 1
-    graph = init_graph(edges, max_weight)
+    graph = init_graph(edges, 1)
     f = 0
     iterations = 0
     current_connected_component = {0}
@@ -169,7 +169,7 @@ def optimize_simple(vertices, edges, max_weight):
         v_from = randrange(vertices)
         v_to = randrange(vertices)
         if graph[edge_number][0] not in current_connected_component and v_from in current_connected_component and v_to not in current_connected_component:
-            graph[edge_number] = (v_from, v_to, max_weight)
+            graph[edge_number] = (v_from, v_to, 1)
             current_connected_component.add(v_to)
             f += 1
             no_change_iterations = 0
@@ -184,11 +184,52 @@ def optimize_simple(vertices, edges, max_weight):
         #
     return iterations
 
-vertices = 1000
-edges = 100
+# here we can do some
+def optimize_simple2(vertices, edges):
+    global run_number
+    print("Run: ", run_number)
+    run_number += 1
+    graph = init_graph(edges, 1)
+    f = 0
+    iterations = 0
+    current_connected_component = {0}
+    no_change_iterations = 0
+    while f != edges:
+        if no_change_iterations > 1000000:
+            print(f)
+            print(current_connected_component)
+            print([e for e in graph if e[0] in current_connected_component])
+            exit(0)
+        iterations += 1
+        # nextGen = graph.copy()
+
+        # mutation with lower probability
+        edge_number = randrange(edges)
+        v_from = randrange(vertices)
+        v_to = randrange(vertices)
+        if graph[edge_number][0] not in current_connected_component and v_from in current_connected_component and v_to not in current_connected_component:
+            graph[edge_number] = (v_from, v_to, 1)
+            current_connected_component.add(v_to)
+            f += 1
+            no_change_iterations = 0
+        else:
+            no_change_iterations += 1
+        # mutate(nextGen, vertices, maxWeight)
+        # relaxed = dijkstra(vertices, nextGen)
+
+        # if relaxed >= f:
+        #     graph = nextGen
+        #     f = relaxed
+        #
+    return iterations
+
+edges = 1000
+vertices = list(range(edges + 100, 10 * edges, 10))
 runs = 100
-max_weight = 100
-medium_res = sum([optimize_simple(vertices, edges, max_weight) for _ in range(runs)]) / runs
-print("Simple: ", medium_res)
-medium_res = sum([optimize(vertices, edges, max_weight) for _ in range(runs)]) / runs
-print("Real: ", medium_res)
+
+medium_iterations = [sum([optimize_simple(v, edges) for _ in range(runs)]) / runs for v in vertices]
+
+with open("dijkstra_simple.out", 'w') as f:
+    for i in medium_iterations:
+        f.write(str(i) + ' ')
+

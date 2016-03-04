@@ -13,7 +13,7 @@ iterations = [48.98599999999994, 260.6320000000002, 393.9879999999997, 111.05799
 
 
 for ve in VE:
-        files.append(open("data/v" + str(ve[0]) + "e" + str(ve[1]) + ".txt", 'r'))
+        files.append(open("data/graph_statistics/v" + str(ve[0]) + "e" + str(ve[1]) + ".txt", 'r'))
 
 reachableVertexes = []
 unreachableEdges = []
