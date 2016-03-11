@@ -1,8 +1,9 @@
+import sys
+
 __author__ = 'Den'
 
-import random
-from math import sqrt, ceil
-from matplotlib import pyplot as plt
+# from math import sqrt, ceil
+# from matplotlib import pyplot as plt
 from random import randrange
 
 
@@ -35,7 +36,7 @@ class Vertex:
 # this function takes number of vertices and array of edges in format (vFrom, vTo, weight)
 # and returns number of relaxed edges
 def dijkstra(v, edges):
-    graph = [[] for i in range(v)]
+    graph = [[] for _ in range(v)]
     for edge in edges:
         if edge[0] != -1:
             graph[edge[0]].append(Edge(edge[1], edge[2]))
@@ -66,12 +67,12 @@ def dijkstra(v, edges):
 
 
 # operations for EA
-def init_graph(e, max_weight):
-    return [(-1, -1, max_weight)] * e
+def init_graph(v, e, max_weight,):
+    return [(randrange(v), randrange(v), randrange(max_weight)) for _ in range(e)]
 
 
-def mutate(edges, vertices, max_weight):
-    edges[randrange(len(edges))] = (randrange(vertices), randrange(vertices), randrange(max_weight))
+def mutate(v, e, max_weight):
+    e[randrange(len(e))] = (randrange(v), randrange(v), randrange(max_weight))
 
 
 # function take statistics about the graph:
@@ -122,21 +123,17 @@ def statistics(v, edges, maxWeight):  #TODO: check the current statistics and mo
     return [reachable, unreachableEdges, leaves, depth]
 
 
-
-run_number = 0
 # EA run
 # now it opimizes only with mutating edgges that are not in the connected components into the edges
 # that lead from connected component out of it
-def optimize(vertices, edges, max_weight):
-    # global run_number
-    # print("Run: ", run_number)
-    # run_number += 1
-    graph = init_graph(edges, max_weight)
+def evo_run(vertices, edges, max_weight):
+
+    graph = init_graph(vertices, edges, max_weight)
     f = 0
     iterations = 0
     while f != edges:
         nextGen = graph.copy()
-        mutate(nextGen, vertices, max_weight)
+        mutate(vertices, nextGen, max_weight)
         relaxed = dijkstra(vertices, nextGen)
 
         if relaxed >= f:
@@ -177,8 +174,16 @@ def optimize_simple(vertices, edges, max_weight):
 
     return iterations
 
+if len(sys.argv) == 1:
+    stream_number = ''
+else:
+    stream_number = '_' + sys.argv[1]
 runs = 10
+edges = 100
+with open('data/simplified_runtime{}.out'.format(stream_number), 'w') as f:
+    for vertices in range(edges + 10, 10 * edges, 10):
+        res = sum([evo_run(vertices, edges, vertices) for _ in range(runs)]) / runs
+        f.write(str(res) + ' ')
+        f.flush()
 
-for V in [50, 100, 200, 400]:
-    for E in [V // 5, V // 4, V // 2, V - 1]:
-        print('V{}E{}:{}'.format(V, E, sum([optimize_simple(V, E, V) for _ in range(runs)]) / runs))
+
