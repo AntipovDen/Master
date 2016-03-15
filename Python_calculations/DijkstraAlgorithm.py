@@ -35,6 +35,45 @@ class Vertex:
 
 # this function takes number of vertices and array of edges in format (vFrom, vTo, weight)
 # and returns number of relaxed edges
+def dijkstra_many_vertices(v, edges):
+    graph = {}
+    left_vertices = set()
+    vertices = {}
+    for edge in edges:
+        if edge[0] != -1:
+            if edge[0] in graph:
+                graph[edge[0]].append(Edge(edge[1], edge[2]))
+            else:
+                graph[edge[0]] = [Edge(edge[1], edge[2])]
+            left_vertices.add(edge[1])
+            vertices[edge[1]] = Vertex(float('inf'), edge[1])
+
+    vertices[0] = Vertex(0., 0)
+
+    relaxed = 0
+
+    cur_vertex = vertices[0]
+    while True:
+        if cur_vertex.number not in graph:
+            break
+        for edge in graph[cur_vertex.number]:
+            relaxValue = cur_vertex.mark + edge.weight
+
+            if vertices[edge.to].mark > relaxValue:
+                vertices[edge.to].mark = relaxValue
+                relaxed += 1
+
+        if len(left_vertices) > 0:
+            cur_vertex = min([vertices[i] for i in left_vertices])
+            left_vertices.remove(cur_vertex.number)
+            if cur_vertex.mark == float('inf'):
+                break
+        else:
+            break
+
+    return relaxed
+
+
 def dijkstra(v, edges):
     graph = [[] for _ in range(v)]
     for edge in edges:
@@ -127,23 +166,32 @@ def statistics(v, edges, maxWeight):  #TODO: check the current statistics and mo
 # now it opimizes only with mutating edgges that are not in the connected components into the edges
 # that lead from connected component out of it
 def evo_run(vertices, edges, max_weight):
-
+    global logfile, run_number
+    run_number += 1
+    logfile.write("Run number {}\n".format(run_number))
+    logfile.flush()
+    if vertices > 2 * edges:
+        algorithm = dijkstra_many_vertices
+    else:
+        algorithm = dijkstra
     graph = init_graph(vertices, edges, max_weight)
     f = 0
     iterations = 0
     while f != edges:
         nextGen = graph.copy()
         mutate(vertices, nextGen, max_weight)
-        relaxed = dijkstra(vertices, nextGen)
+        relaxed = algorithm(vertices, nextGen)
 
         if relaxed >= f:
-            # if relaxed > f:
-            #     print("relaxed: {}".format(relaxed))
+            if relaxed > f:
+                logfile.write("relaxed: {} with {} iterations\n".format(relaxed, iterations))
+                logfile.flush()
             graph = nextGen
             f = relaxed
         iterations += 1
 
     return iterations
+
 
 def optimize_simple(vertices, edges, max_weight):
     # global run_number
@@ -178,12 +226,15 @@ if len(sys.argv) == 1:
     stream_number = ''
 else:
     stream_number = '_' + sys.argv[1]
+logfile = open("data/logs/simplified_runtime_many_vertices{}.log".format(stream_number), 'w')
 runs = 10
 edges = 100
-with open('data/simplified_runtime{}.out'.format(stream_number), 'w') as f:
-    for vertices in range(edges + 10, 10 * edges, 10):
+with open('data/simplified_runtime_many_vertices{}.out'.format(stream_number), 'w') as f:
+    for vertices in [10000, 20000]:  # range(edges + 10, 10 * edges, 10):
+        run_number = 0
         res = sum([evo_run(vertices, edges, vertices) for _ in range(runs)]) / runs
         f.write(str(res) + ' ')
         f.flush()
+logfile.close()
 
 
