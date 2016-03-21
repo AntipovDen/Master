@@ -1,19 +1,33 @@
 """it's a file for checking different fomulas. Usually it doesn't need to be saved"""
-from math import sqrt, log
+from math import sqrt, log, pi
 
 from matplotlib import pyplot as plt
 
 gamma = 0.5772156649
 
 def runtime(e, v):
-    return e * v * (2 * v - e - 1) / ((e + 1) * (v - e - 1)) * (gamma + log(e)) - e * v / (v - e - 1) * log((v - 1) / (v - e))
+    return 2 * v * (log(e) + gamma)
+    # if e == v - 1:
+    #     return 2 * e * (log(e) + gamma) + (pi * e) ** 2 / 6
+    # return e * v * (2 * v - e - 1) / ((e + 1) * (v - e - 1)) * (gamma + log(e)) - e * v / (v - e - 1) * log((v - 1) / (v - e))
 
-with open("data/experiments/simplified_runtime_merged.out", 'r') as f:
-    experiments = [float(s) for s in f.readline().split()]
+with open("data/experiments/dijkstra_edges_equal_vertices_merged.out", 'r') as f:
+    experiments = {100: {}, 500: {}, 1000: {}}
+    for e in [100, 500, 1000]:
+        for v in [e, e + 1, e + 2, e + 5, e + 10, e + 20]:
+            experiments[e][v] = {}
+            results = [float(i) for i in f.readline().split()]
+            lengths = [2, e // 2, e, e + 20, 2 * e]
+            for i in range(5):
+                experiments[e][v][lengths[i]] = results[i]
 
-e = 100
-checkpoints = list(range(e + 10, e * 10, 10))
-assumption = [runtime(100, v) for v in checkpoints]
+for e in [100, 500, 1000]:
+    vertices = [e, e + 1, e + 2, e + 5, e + 10, e + 20]
+    plt.plot(vertices[1:], [runtime(e, v) for v in vertices[1:]], 'b-',
+             vertices, [experiments[e][v][2] for v in vertices], 'go',
+             vertices, [experiments[e][v][e // 2] for v in vertices], 'ro',
+             vertices, [experiments[e][v][e] for v in vertices], 'co',
+             vertices, [experiments[e][v][e + 20] for v in vertices], 'yo',
+             vertices, [experiments[e][v][2 * e] for v in vertices], 'ko',)
+    plt.show()
 
-plt.plot(checkpoints, experiments, 'ro', checkpoints, assumption, 'bo')
-plt.show()

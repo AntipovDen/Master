@@ -46,22 +46,23 @@ def dijkstra_many_vertices(v, edges):
             else:
                 graph[edge[0]] = [Edge(edge[1], edge[2])]
             left_vertices.add(edge[1])
-            vertices[edge[1]] = Vertex(float('inf'), edge[1])
+            if edge[1] not in vertices:
+                vertices[edge[1]] = Vertex(float('inf'), edge[1])
 
-    vertices[0] = Vertex(0., 0)
+
+        vertices[0] = Vertex(0., 0)
 
     relaxed = 0
 
     cur_vertex = vertices[0]
     while True:
-        if cur_vertex.number not in graph:
-            break
-        for edge in graph[cur_vertex.number]:
-            relaxValue = cur_vertex.mark + edge.weight
+        if cur_vertex.number in graph:
+            for edge in graph[cur_vertex.number]:
+                relaxValue = cur_vertex.mark + edge.weight
 
-            if vertices[edge.to].mark > relaxValue:
-                vertices[edge.to].mark = relaxValue
-                relaxed += 1
+                if vertices[edge.to].mark > relaxValue:
+                    vertices[edge.to].mark = relaxValue
+                    relaxed += 1
 
         if len(left_vertices) > 0:
             cur_vertex = min([vertices[i] for i in left_vertices])
@@ -226,15 +227,20 @@ if len(sys.argv) == 1:
     stream_number = ''
 else:
     stream_number = '_' + sys.argv[1]
-logfile = open("data/logs/simplified_runtime_many_vertices{}.log".format(stream_number), 'w')
+logfile = open("data/logs/dijkstra_edges_equal_vertices{}.log".format(stream_number), 'w')
 runs = 10
-edges = 100
-with open('data/simplified_runtime_many_vertices{}.out'.format(stream_number), 'w') as f:
-    for vertices in [10000, 20000]:  # range(edges + 10, 10 * edges, 10):
-        run_number = 0
-        res = sum([evo_run(vertices, edges, vertices) for _ in range(runs)]) / runs
-        f.write(str(res) + ' ')
-        f.flush()
+with open('data/dijkstra_edges_equal_vertices{}.out'.format(stream_number), 'w') as f:
+    for e in [100, 500, 1000]:
+        for vertices in [e, e + 1, e + 2, e + 5, e + 10, e + 20]:
+            for max_weight in [2, e // 2, e, e + 20, 2 * e]: # range(edges + 10, 10 * edges, 10):
+                run_number = 0
+                logfile.write("V{}E{}W{}\n".format(vertices, e, max_weight))
+                logfile.flush()
+                res = sum([evo_run(vertices, e, max_weight) for _ in range(runs)]) / runs
+                f.write(str(res) + ' ')
+                f.flush()
+            f.write('\n')
+            f.flush()
 logfile.close()
 
 
