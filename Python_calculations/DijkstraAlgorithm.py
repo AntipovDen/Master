@@ -84,17 +84,19 @@ def dijkstra(v, edges):
     vertices = [Vertex(0., 0)] + [Vertex(float('inf'), i) for i in range(1, v)]
     left_vertices = {i for i in range(1, v)}
 
-    relaxed = 0
+    relaxed = set()
 
     cur_vertex = vertices[0]
+    answer = []
     while True :
         for edge in graph[cur_vertex.number]:
             relaxValue = cur_vertex.mark + edge.weight
 
             if vertices[edge.to].mark > relaxValue:
                 vertices[edge.to].mark = relaxValue
-                relaxed += 1
+                relaxed.add((cur_vertex.number, edge.to, edge.weight))
 
+        answer.append(cur_vertex)
         if len(left_vertices) > 0:
             cur_vertex = min([vertices[i] for i in left_vertices])
             left_vertices.remove(cur_vertex.number)
@@ -103,7 +105,7 @@ def dijkstra(v, edges):
         else:
             break
 
-    return relaxed
+    return relaxed, answer
 
 
 # operations for EA
