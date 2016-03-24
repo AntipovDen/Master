@@ -13,6 +13,17 @@ class Edge:
         self.to = targetVertex
         self.weight = weight
 
+    def __lt__(self, other):
+        return self.weight < other.weight
+
+    def __le__(self, other):
+        return self.weight <= other.weight
+
+    def __gt__(self, other):
+        return self.weight > other.weight
+
+    def __ge__(self, other):
+        return self.weight >= other.weight
 
 # Vertex class that is comparable by the distance to it that is kept in the "mark" field
 class Vertex:
@@ -89,6 +100,7 @@ def dijkstra(v, edges):
     cur_vertex = vertices[0]
     answer = []
     while True :
+        graph[cur_vertex.number].sort()
         for edge in graph[cur_vertex.number]:
             relaxValue = cur_vertex.mark + edge.weight
 
@@ -180,20 +192,33 @@ def evo_run(vertices, edges, max_weight):
     graph = init_graph(vertices, edges, max_weight)
     f = 0
     iterations = 0
+    p_relax = []
     while f != edges:
         nextGen = graph.copy()
         mutate(vertices, nextGen, max_weight)
-        relaxed = algorithm(vertices, nextGen)
+        relaxed, answer = algorithm(vertices, nextGen)
 
-        if relaxed >= f:
-            if relaxed > f:
-                logfile.write("relaxed: {} with {} iterations\n".format(relaxed, iterations))
+        if len(relaxed) >= f:
+            if len(relaxed) > f:
+                logfile.write("relaxed: {} with {} iterations\n".format(len(relaxed), iterations))
                 logfile.flush()
+            p_relax.append(get_p_relax(answer, relaxed, max_weight))
             graph = nextGen
             f = relaxed
         iterations += 1
 
     return iterations
+
+
+def get_p_relax(answer, relaxed, wm):
+    position = {answer[i].number : i for i in range(len(answer))}
+    edges = [[] for _ in range(len(answer))]
+    for edge in relaxed:
+        edges[position[edge[1]]].append((edge[0], edge[2]))
+    for e in edges:
+        e.sort()
+        e.reverse()
+    #TODO: understatand how to get this probability
 
 
 def optimize_simple(vertices, edges, max_weight):
