@@ -194,8 +194,8 @@ logfile = open("data/logs/dijkstra_distance_dynamics{}.log".format(stream_number
 runs = 10
 run_number = 0
 with open('data/dijkstra_distance_dynamics{}.out'.format(stream_number), 'w') as f:
-    e = 150
-    v = 30
+    e = 100
+    v = 15
     for _ in range(runs):
         results = evo_run(v, e)
         for i in range(1, len(results)):
@@ -208,8 +208,8 @@ with open('data/dijkstra_distance_dynamics{}.out'.format(stream_number), 'w') as
                     res = str(len(cur_res) - len(prev_res))
                 print(res)
             else:
-                res = sum([abs(results[i][1][j] - results[i-1][1][j]) for j in range(len(results[i][1]))])
-            f.write("iterations: {} fitness: {} res: {}\n".format(str(results[i][0]).ljust(6), str(results[i][2]).ljust(2), res))
+                res = sum([abs(cur_res[j].mark - prev_res[j].mark) for j in range(len(prev_res))])
+            f.write("iterations: {} fitness: {} res: {} order:{}\n".format(str(iterations).ljust(6), str(fitness).ljust(2), str(res).ljust(25), [v.number for v in cur_res]))
             f.flush()
 logfile.close()
 
