@@ -144,7 +144,6 @@ def evo_run(vertices, edges):
     graph = init_graph(vertices, edges)
     f = 0
     iterations = 0
-    results = []
     cur_order = [Vertex(0, i) for i in range(vertices)]
     order_changes = []
     distances_changes = []
@@ -172,7 +171,7 @@ def evo_run(vertices, edges):
             graph = nextGen
             f = relaxed
 
-    return iterations, results
+    return iterations, order_changes, distances_changes
 
 
 def optimize_simple(vertices, edges, max_weight):
@@ -205,15 +204,19 @@ for v in [15, 20, 50]:
         else:
             stream_number = '_v{}e{}_{}'.format(v, e, sys.argv[1])
         logfile = open("data/logs/dijkstra_order_changes{}.log".format(stream_number), 'w')
-        runs = 100
+        runs = 1000
         run_number = 0
         with open('data/dijkstra_order_changes{}.out'.format(stream_number), 'w') as f:
             for _ in range(runs):
-                iterations, results = evo_run(v, e)
-                f.write(str(iterations))
-                for iter in results:
+                iterations, order_changes, distances_changes = evo_run(v, e)
+                f.write(str(iterations) + '\n')
+                for iter in order_changes:
                     #i'll merge them later
-                    f.write(' ' + str(iter))
+                    f.write(str(iter) + ' ')
+                f.write('\n')
+                for iter in distances_changes:
+                    #i'll merge them later
+                    f.write(str(iter) + ' ')
                 f.write('\n')
                 f.flush()
         logfile.close()
