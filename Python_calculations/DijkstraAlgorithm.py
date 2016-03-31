@@ -131,8 +131,7 @@ def mutate(v, e):
 
 
 # EA run
-# now it opimizes only with mutating edgges that are not in the connected components into the edges
-# that lead from connected component out of it
+
 def evo_run(vertices, edges):
     global logfile, run_number
     run_number += 1
@@ -146,7 +145,11 @@ def evo_run(vertices, edges):
     f = 0
     iterations = 0
     results = []
+    cur_order = [Vertex(0, i) for i in range(vertices)]
+    order_changes = []
+    distances_changes = []
     while f != edges:
+        iterations += 1
         nextGen = graph.copy()
         mutate(vertices, nextGen)
         relaxed, answer = algorithm(vertices, nextGen)
@@ -155,13 +158,21 @@ def evo_run(vertices, edges):
             if relaxed > f:
                 logfile.write("relaxed: {} with {} iterations\n".format(relaxed, iterations))
                 logfile.flush()
-            if len(results) == 0 or results[-1][1] != answer:
-                results.append((iterations, relaxed, answer))
+            order_changed, distances_changed = False, False
+            for i in range(min(len(answer), len(cur_order))):
+                if not order_changed and cur_order[i].number != answer[i].number:
+                    order_changed = True
+                    order_changes.append(iterations)
+                if not distances_changed and cur_order[i].mark != answer[i].mark:
+                    distances_changed = True
+                    distances_changes.append(iterations)
+                if distances_changed and order_changed:
+                    break
+
             graph = nextGen
             f = relaxed
-        iterations += 1
 
-    return results
+    return iterations, results
 
 
 def optimize_simple(vertices, edges, max_weight):
@@ -186,31 +197,25 @@ def optimize_simple(vertices, edges, max_weight):
 
     return iterations
 
-if len(sys.argv) == 1:
-    stream_number = ''
-else:
-    stream_number = '_' + sys.argv[1]
-logfile = open("data/logs/dijkstra_distance_dynamics{}.log".format(stream_number), 'w')
-runs = 10
-run_number = 0
-with open('data/dijkstra_distance_dynamics{}.out'.format(stream_number), 'w') as f:
-    e = 100
-    v = 15
-    for _ in range(runs):
-        results = evo_run(v, e)
-        for i in range(1, len(results)):
-            iterations, fitness, cur_res = results[i]
-            prev_res = results[i-1][2]
-            if len(cur_res) != len(prev_res):
-                if len(cur_res) > len(prev_res):
-                    res = '+{}'.format(len(cur_res) - len(prev_res))
-                else:
-                    res = str(len(cur_res) - len(prev_res))
-                print(res)
-            else:
-                res = sum([abs(cur_res[j].mark - prev_res[j].mark) for j in range(len(prev_res))])
-            f.write("iterations: {} fitness: {} res: {} order:{}\n".format(str(iterations).ljust(6), str(fitness).ljust(2), str(res).ljust(25), [v.number for v in cur_res]))
-            f.flush()
-logfile.close()
+
+for v in [15, 20, 50]:
+    for e in [v * 2, v * 5, v ** 2 // 2]:
+        if len(sys.argv) == 1:
+            stream_number = '_v{}e{}'.format(v, e)
+        else:
+            stream_number = '_v{}e{}_{}'.format(v, e, sys.argv[1])
+        logfile = open("data/logs/dijkstra_order_changes{}.log".format(stream_number), 'w')
+        runs = 100
+        run_number = 0
+        with open('data/dijkstra_order_changes{}.out'.format(stream_number), 'w') as f:
+            for _ in range(runs):
+                iterations, results = evo_run(v, e)
+                f.write(str(iterations))
+                for iter in results:
+                    #i'll merge them later
+                    f.write(' ' + str(iter))
+                f.write('\n')
+                f.flush()
+        logfile.close()
 
 
