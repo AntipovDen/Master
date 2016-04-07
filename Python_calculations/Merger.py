@@ -6,7 +6,11 @@ with open("{}_merged.out".format(file_prefix), 'w') as fout:
     results = [[[float(s) for s in line.split()] for line in fin.readlines()] for fin in fins]
     for f in fins:
         f.close()
-    merged = [[sum([results[j][k][i] for j in range(threads)]) / threads for i in range(len(results[0][k]))] for k in range(len(results[0]))]
+    merged = [[sum([results[j][k][i] for j in range(threads)]) / threads for i in range(len(results[0][k]))] for k in range(len(results[0]) -1 )]
+    # it's uncommon
+    merged.append([])
+    for i in range(5):
+        merged[-1].append(sum([results[j][-1][i] for j in range(threads) if len(results[j][-1]) > i]) / max(sum([1 for j in range(threads) if len(results[j][-1]) > i]), 1))
     for i in merged:
         for j in i:
             fout.write(str(j))
