@@ -198,13 +198,13 @@ def optimize_simple(vertices, edges, max_weight):
 
 
 for v in [15, 20, 50]:
-    for e in [v * 2, v * 5, v ** 2 // 2]:
+    for e in [v * 2, v * 5, v ** 2 // 3]:
         if len(sys.argv) == 1:
             stream_number = '_v{}e{}'.format(v, e)
         else:
             stream_number = '_v{}e{}_{}'.format(v, e, sys.argv[1])
         logfile = open("data/logs/dijkstra_order_changes{}.log".format(stream_number), 'w')
-        runs = 1000
+        runs = 100
         run_number = 0
         with open('data/dijkstra_order_changes{}.out'.format(stream_number), 'w') as f:
             for _ in range(runs):
