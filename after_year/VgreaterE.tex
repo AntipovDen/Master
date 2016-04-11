@@ -1,0 +1,45 @@
+\documentclass[a4paper]{article}
+
+
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{amsmath}
+
+\begin{document}
+ 
+ Consider the case when $V >> E$. In this case we can find the upper bound on the expected runtime as the expected runtime of simplified version of the algorithm. This simplified version will be able to accept new individual only if the changed edge hadn't been relaxed and if it's new start is reachable from the starting vertex and it's new end hasn't been reachable before. That will guarantee that changed edge becomes relaxed. But the expected runtime will be greater than runtime of the original algorithm, because we don't improve the current fitness by putting edges into the relaxing positions beetween two reachable vertices and we don't change the relaxed edges that can be put into positions that add more than one relaxation. Also we can notice that the graph will always be the tree with the root in the starting vertex.
+ 
+ So we can find the expected runtime of the simplified version of the algorithm in the following way. Let $p_{ur}(i)$ be the probability to change the edge that hasn't been relaxed with the current fitness equals to $i$. Also let $p_{sr}(i)$ ad $p_{eu}(i)$ be the probabilities to choose the vertex reachable from the starting one as the start of the edge and the unreachable vertex as the end.
+ Then the probability to encrease the fitness by one will be:
+ 
+ $$ p_{+1}(i) = p_{ur}(i) \cdot p_{sr}(i) \cdot p_{eu}(i) = \frac{E - i + 1}{E} \cdot \frac{i}{V} \cdot \frac{V - i}{V}$$
+ 
+ If $V > E + 1$ the expected runtime of the algorithm could be written in the next way:
+ 
+ \begin{align*}
+  T & = \sum_{i = 1}^E \frac{1}{p_{+1}(i)} = \sum_{i = 1}^E \frac{EV^2}{i(V - i)(E - i + 1)} = \\
+    & = EV \sum_{i = 1}^E \frac{1}{E - i + 1} \left(\frac{1}{i} + \frac{1}{V - i} \right) = \\
+    & = EV \sum_{i = 1}^E \left[ \frac{1}{E + 1} \left( \frac{1}{E - i + 1} + \frac{1}{i}\right) + \frac{1}{V - E - 1} \left( \frac{1}{E - i + 1} - \frac{1}{V - i} \right)\right] = \\
+    & = \left( \frac{2EV}{E + 1} + \frac{EV}{V - E - 1}\right) \sum_{i = 1}^E \frac{1}{i} - \frac{EV}{V - E - 1} \sum_{i = 1}^E \frac{1}{V - i} \approx \\
+    & \approx \frac{EV(2V - E - 1)}{(E + 1)(V - E - 1)}(\gamma + \ln{E}) - \frac{EV}{V - E - 1} \ln \frac{V - 1}{V - E}
+ \end{align*}
+ 
+ where $\gamma$ is Euler's constant. If $V = E + 1$ the runtime of the algorithm begins to quadratically depend on the number of edges:
+ 
+ \begin{align*}
+  T & = 2E \sum_{i = 1}^E + E(E + 1) \sum_{i = 1}^E \frac{1}{i^2} \approx 2E(\gamma + \ln{E}) + E(E + 1)(\frac{\pi^2}{6} + o(1)) = \\
+    & = \frac{\pi^2 E^2}{6} + o(\frac{\pi^2 E^2}{6})
+ \end{align*}
+
+ This result is much higher then experiments results, so for the cases when $V > E$ but $V \approx E$ we need some other analysys.
+ 
+ Now let's consider case when $V = aE$ where $a$ is some constant greater then one. Then the equality for runtime turns into:
+ 
+ \begin{align*}
+  T & = \frac{aE^2(2aE - E - 1}{(E + 1)(aE - E - 1} (\ln{E} + \gamma) - \frac{aE^2}{aE - E - 1} \ln \frac{aE - 1}{(a - 1) E} \approx \\
+    & \approx \frac{aE}{(a - 1)} \left((2a - 1)(\ln{E} + \gamma) - \ln\frac{a}{a - 1} \right)\approx \\
+    & \approx aE(\ln{E} + \gamma) \frac{2a - 1}{a - 1} = V(\ln{E} + \gamma)\left(2 + \frac{1}{a - 1}\right)
+ \end{align*}
+ 
+\end{document}
