@@ -1,0 +1,61 @@
+\documentclass{beamer}
+\usetheme{CambridgeUS}
+
+
+%%% PACKAGES
+\usepackage[russian]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{tikz}
+\usepackage{graphics}
+\usepackage{color}
+
+%%% BEAMER SETTINGS
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{headline}{}
+
+%%% TIKZ SETTINGS
+\usetikzlibrary{fit}
+
+%%% NEW COMMANDS
+\def\pitem{\pause \item}
+
+
+%\includeonlyframes{current} % leaves only the given frames
+
+\begin{document}
+\title[Автоматическая генерация тестов]{Теоретический анализ времени работы эволюционных алгоритмов при генерации тестов}
+%\transduration{20}
+\author[Денис Антипов]{Денис Антипов}
+\institute[Университет ИТМО]{Национальный исследовательский университет информационных технологий, механики и оптики}
+\date{13.04.2016}
+
+ 
+\begin{frame}
+ \maketitle
+\end{frame}
+ 
+ \begin{frame}{План презентации}
+  \tableofcontents
+ \end{frame}
+
+ \section{Введение}
+ \subsection{Эволюционные алгоритмы}
+ \begin{frame}{Эволюционные алгоритмы}
+  \begin{itemize}
+   \item Алгоритмы оптимизации, исполбзующие идеи эволюции.
+   \item При инициализации алгоритма создается первое поколение решений.
+   \item На каждой итерации алгоритм генерирует новое поколение на основе предыдущего.
+   \item Алгоритм заканчивает работу, когда находит достаточно хорошее решение.
+  \end{itemize}
+ \end{frame}
+ 
+ \subsection{Генерация тестов}
+ \begin{frame}{Генерация тестов}
+  
+ \end{frame}
+
+
+
+\end{document}
