@@ -1,5 +1,0 @@
-\beamer@endinputifotherversion {3.36pt}
-\select@language {russian}
-\beamer@sectionintoc {1}{\IeC {\CYRV }\IeC {\cyrv }\IeC {\cyre }\IeC {\cyrd }\IeC {\cyre }\IeC {\cyrn }\IeC {\cyri }\IeC {\cyre }}{3}{0}{1}
-\beamer@subsectionintoc {1}{1}{\IeC {\CYREREV }\IeC {\cyrv }\IeC {\cyro }\IeC {\cyrl }\IeC {\cyryu }\IeC {\cyrc }\IeC {\cyri }\IeC {\cyro }\IeC {\cyrn }\IeC {\cyrn }\IeC {\cyrery }\IeC {\cyre } \IeC {\cyra }\IeC {\cyrl }\IeC {\cyrg }\IeC {\cyro }\IeC {\cyrr }\IeC {\cyri }\IeC {\cyrt }\IeC {\cyrm }\IeC {\cyrery }}{3}{0}{1}
-\beamer@subsectionintoc {1}{2}{\IeC {\CYRG }\IeC {\cyre }\IeC {\cyrn }\IeC {\cyre }\IeC {\cyrr }\IeC {\cyrr }\IeC {\cyra }\IeC {\cyrc }\IeC {\cyri }\IeC {\cyrya } \IeC {\cyrt }\IeC {\cyre }\IeC {\cyrs }\IeC {\cyrt }\IeC {\cyro }\IeC {\cyrv }}{4}{0}{1}
