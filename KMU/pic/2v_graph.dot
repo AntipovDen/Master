@@ -1,0 +1,15 @@
+digraph graph_2v {
+
+
+  // node define
+  v0;
+  v1;
+
+  // edge define
+  v0 -> v1;
+  v0 -> v1;
+  v0 -> v0;
+  v1 -> v0;
+  v1 -> v1;
+  
+}

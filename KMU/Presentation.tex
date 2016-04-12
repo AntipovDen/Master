@@ -47,7 +47,7 @@
  \subsection{Эволюционные алгоритмы}
  \begin{frame}{Эволюционные алгоритмы}
   \begin{itemize}
-   \item Алгоритмы оптимизации, исполбзующие идеи эволюции.
+   \item Алгоритмы оптимизации, использующие идеи эволюции.
    \item При инициализации алгоритма создается первое поколение решений.
    \item На каждой итерации алгоритм генерирует новое поколение на основе предыдущего.
    \item Алгоритм заканчивает работу, когда находит достаточно хорошее решение.
@@ -57,7 +57,7 @@
  \subsection{Генерация тестов}
  \begin{frame}{Генерация тестов}
   \begin{itemize}
-   \item Эволюционные алгоритмы успешно использовались для генерации тестов\footnote{Ссылка на Макса}.
+   \item Эволюционные алгоритмы успешно использовались для генерации тестов\footnote{Буздалов М.В. Диссертация на тему «Генерация тестов для определения неэффективных решений олимпиадных задач по программированию с использованием эволюционных алгоритмов»}.
    \item Сложная оценка ожидаемого числа итераций таких алгоритмов.
    \item Для оценки времени работы был выбран алгоритм,генерирующий тесты для конкретной реализации алгоритма Дейкстры.
   \end{itemize}
@@ -92,20 +92,63 @@
  \begin{frame}{Разреженный граф}
   \begin{itemize}
    \item В случае, когда $V \gg E$, можно считать, что алгоритм не выбирает новый граф, если он нарушает инвариант: все задействованные ребра графа образуют дерево с корнем в стартовой вершине.
-   \item Это замедлит алгоритм, но зато позволит дать оценку на время работы.
-   \item Если $V = aE$, где $a > 1$ -- константа, тогда время работы $T \le V \ln{E} \left(2 + 1/(a - 1)\right)$
+   \item Это замедлит алгоритм, но зато позволит дать оценку на время работы:
+   \begin{itemize}
+    \item Если $V > E + 1$:
+    $$T \le \frac{EV(2V - E - 1)}{(E + 1)(V - E - 1}(\gamma + \ln E) - \frac{EV}{V - E - 1} \ln\frac{V - 1}{V - E}$$
+    \item Если $V = E + 1$:
+    $$T \le \frac{\pi^2 E^2}{6} + o\left( \frac{\pi^2 E^2}{6} \right)$$
+   \end{itemize}
+   \item Если $V = aE$, где $a > 1$ -- константа, тогда время работы $T \lesssim V \ln{E} \left(2 + 1/(a - 1)\right)$
   \end{itemize}
  \end{frame}
 
  \subsection{Плотный граф}
  \begin{frame}{Плотный граф}
-  Тут будет что-то умное
+  Рассмотрим случай графа с двумя вершинами:
+  \includegraphics[height=4cm]{pic/2v_graph.png}
+  %TODO: include my picture from home
+  \includegraphics[height=4cm]{pic/2v_graph.png}
+ \end{frame}
+ 
+ \begin{frame}{Плотный граф}
+  \includegraphics[height=1cm]{pic/2v_graph.png}
+  \begin{itemize}
+   \item Введем потенциал $\Phi = \sum d_i \delta_i$
+   \item Матожидание его изменения: $$E(\Phi_t - \Phi_{t + 1}) \ge \sum_{\text{unrelaxed edges}} \frac{1}{E} \frac{1}{4} \delta_i = \frac{1}{4E} \Phi_t$$
+   \item По мультипликативной дрифт-теореме: $$E(T) \ge 4E \left( 1 + \ln\frac{\Phi_0}{\Phi_{min}}\right)$$
+   \item Проблема: $\Phi_{min}$ мжет быть сколь угодно маленький.
+  \end{itemize}
+ \end{frame}
+ 
+  \begin{frame}{Плотный граф}
+  \begin{itemize}
+   \item Введем потенциал $\Phi = \sum d_i \delta_i$
+   \item Матожидание его изменения: $$E(\Phi_t - \Phi_{t + 1}) \ge \sum_{\text{unrelaxed edges}} \frac{1}{E} \frac{1}{4} \delta_i = \frac{1}{4E} \Phi_t$$
+   \item По мультипликативной дрифт-теореме: $$E(T) \ge 4E \left( 1 + \ln\frac{\Phi_0}{\Phi_{min}}\right)$$
+   \item Проблема: $\Phi_{min}$ может быть сколь угодно мал.
+  \end{itemize}
+ \end{frame}
+ 
+ \begin{frame}{Плотный граф}
+  \begin{itemize}
+   \item Если бы $\Phi_{min} = \frac{eE}{e^E}$, то ожидаемое время работы не превышало бы $4e^2$
+   \item Рассмотрим вероятность случая, когда $Phi_{min}$ не становится меньше:
+   $$p\left(\Phi_{min} > \frac{eE}{e^E}\right) > p\left(\forall \delta_i > \frac{eE}{e^E}\right) = \prod_{i=1}^E (1 - 2 \frac{eE}{e^E}i) \ge$$
+   $$\ge (1 - 2 \frac{eE^2}{e^E})^E \xrightarrow[E \to +\infty]{} 1 $$
+  \end{itemize}
  \end{frame}
  
  \section{Эксперименты}
  \subsection{Разреженный граф}
  \begin{frame}{Разреженный граф}
   \includegraphics[width=10cm]{pic/rarefied_graph.png}
+ \end{frame}
+ 
+ \subsection{Плотный граф}
+ \begin{frame}{Плотный граф}
+   %TODO: include my picture at home
+   \includegraphics[width=10cm]{pic/dense_graph.png}
  \end{frame}
 
 
