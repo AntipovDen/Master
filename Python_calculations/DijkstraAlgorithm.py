@@ -98,9 +98,9 @@ def dijkstra(v, edges):
     relaxed = 0
 
     cur_vertex = vertices[0]
-    answer = []
+    # answer = []
     while True:
-        graph[cur_vertex.number].sort()
+        # graph[cur_vertex.number].sort()
         for edge in graph[cur_vertex.number]:
             relaxValue = cur_vertex.mark + edge.weight
 
@@ -108,7 +108,7 @@ def dijkstra(v, edges):
                 vertices[edge.to].mark = relaxValue
                 relaxed += 1  # .add((cur_vertex.number, edge.to, edge.weight))
 
-        answer.append(cur_vertex)
+        # answer.append(cur_vertex)
         if len(left_vertices) > 0:
             cur_vertex = min([vertices[i] for i in left_vertices])
             left_vertices.remove(cur_vertex.number)
@@ -117,7 +117,7 @@ def dijkstra(v, edges):
         else:
             break
 
-    return relaxed, answer
+    return relaxed  # , answer
 
 
 # operations for EA
@@ -144,34 +144,34 @@ def evo_run(vertices, edges):
     graph = init_graph(vertices, edges)
     f = 0
     iterations = 0
-    cur_order = [Vertex(0, i) for i in range(vertices)]
-    order_changes = []
-    distances_changes = []
+    # cur_order = [Vertex(0, i) for i in range(vertices)]
+    # order_changes = []
+    # distances_changes = []
     while f != edges:
         iterations += 1
-        nextGen = graph.copy()
-        mutate(vertices, nextGen)
-        relaxed, answer = algorithm(vertices, nextGen)
+        next_gen = graph.copy()
+        mutate(vertices, next_gen)
+        relaxed = algorithm(vertices, next_gen)
 
         if relaxed >= f:
             if relaxed > f:
                 logfile.write("relaxed: {} with {} iterations\n".format(relaxed, iterations))
                 logfile.flush()
-            order_changed, distances_changed = False, False
-            for i in range(min(len(answer), len(cur_order))):
-                if not order_changed and cur_order[i].number != answer[i].number:
-                    order_changed = True
-                    order_changes.append(iterations)
-                if not distances_changed and cur_order[i].mark != answer[i].mark:
-                    distances_changed = True
-                    distances_changes.append(iterations)
-                if distances_changed and order_changed:
-                    break
+            # order_changed, distances_changed = False, False
+            # for i in range(min(len(answer), len(cur_order))):
+            #     if not order_changed and cur_order[i].number != answer[i].number:
+            #         order_changed = True
+            #         order_changes.append(iterations)
+            #     if not distances_changed and cur_order[i].mark != answer[i].mark:
+            #         distances_changed = True
+            #         distances_changes.append(iterations)
+            #     if distances_changed and order_changed:
+            #         break
 
-            graph = nextGen
+            graph = next_gen
             f = relaxed
 
-    return iterations, order_changes, distances_changes
+    return iterations  # , order_changes, distances_changes
 
 
 def optimize_simple(vertices, edges, max_weight):
@@ -197,28 +197,30 @@ def optimize_simple(vertices, edges, max_weight):
     return iterations
 
 
-for v in [15, 20, 50]:
-    for e in [v * 2, v * 5, v ** 2 // 3]:
-        if len(sys.argv) == 1:
-            stream_number = '_v{}e{}'.format(v, e)
-        else:
-            stream_number = '_v{}e{}_{}'.format(v, e, sys.argv[1])
-        logfile = open("data/logs/dijkstra_order_changes{}.log".format(stream_number), 'w')
-        runs = 100
-        run_number = 0
-        with open('data/dijkstra_order_changes{}.out'.format(stream_number), 'w') as f:
-            for _ in range(runs):
-                iterations, order_changes, distances_changes = evo_run(v, e)
-                f.write(str(iterations) + '\n')
-                for iter in order_changes:
-                    #i'll merge them later
-                    f.write(str(iter) + ' ')
-                f.write('\n')
-                for iter in distances_changes:
-                    #i'll merge them later
-                    f.write(str(iter) + ' ')
-                f.write('\n')
-                f.flush()
-        logfile.close()
+v = 2
+if len(sys.argv) == 1:
+    stream_number = ''
+else:
+    stream_number = '_{}'.format(sys.argv[1])
+logfile = open("data/logs/dijkstra_v2{}.log".format(stream_number), 'w')
+runs = 10
+run_number = 0
+with open('data/experiments/dijkstra_v2{}.out'.format(stream_number), 'w') as f:
+    for e in list(range(2, 100, 3)):
+        f.write('{}\n'.format(sum([evo_run(v, e) for _ in range(runs)]) / runs))
+        f.flush()
+        # for _ in range(runs):
+        #     iterations, order_changes, distances_changes = evo_run(v, e)
+        #     f.write(str(iterations) + '\n')
+        #     for iter in order_changes:
+        #         #i'll merge them later
+        #         f.write(str(iter) + ' ')
+        #     f.write('\n')
+        #     for iter in distances_changes:
+        #         #i'll merge them later
+        #         f.write(str(iter) + ' ')
+        #     f.write('\n')
+        #     f.flush()
+logfile.close()
 
 
