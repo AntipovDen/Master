@@ -15,7 +15,7 @@ def make_rarefied_graph():
 
     vertices = list(range(110, 1000, 10))
     plt.plot(vertices, experiment, 'bo', label='experiment')
-    plt.plot(vertices, [bound(v, 100) for v in vertices], 'ro', label='theoretical bound')
+    plt.plot(vertices, [bound(v, 100) for v in vertices], 'r^', label='theoretical bound')
     plt.xlabel('Vertices')
     plt.ylabel('Iterations')
     plt.title('Runtime for E = 100')
@@ -51,7 +51,7 @@ def make_picture_for_two_vertices():
 
 
 def make_dense_graph():
-    with open('data/experiments/dijkstra_v2_merged.out', 'r') as f:
+    with open('../KMU/pic/dijkstra_v2_merged.out', 'r') as f:
         experiment = [float(s) for s in f.readline().split()]
 
     gamma = 0.5772156649
@@ -64,8 +64,8 @@ def make_dense_graph():
 
     edges = list(range(2, 74, 3))
     plt.plot(edges, experiment, 'bo', label='experiment')
-    plt.plot(edges, [theoretical_bound(e) for e in edges], 'ro', label='theoretical bound 4E^2')
-    plt.plot(edges, [real_bound(e) for e in edges], 'go', label='seems to be a bound 4E^3')
+    plt.plot(edges, [real_bound(e) for e in edges], 'r^', label='theoretical bound 4E^3')
+    # plt.plot(edges, [real_bound(e) for e in edges], 'go', label='seems to be a bound 4E^3')
     plt.xlabel('Edges')
     plt.ylabel('Iterations')
     plt.title('Runtime for V = 2')
