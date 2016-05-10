@@ -108,7 +108,6 @@ After that algorithm mutates current graph and calculates it's number of relaxed
 The pseudocode of the algorithm is presented on the figure~\ref{pseudocode}. Function $dijkstra(graph)$ returns the number of the relaxed edges in the $graph$.
 
 \begin{figure}[ht]
-\label{pseudocode}
 \begin{center}
 \begin{algorithm}[H]
   \KwData{$V$, $E$}
@@ -131,6 +130,7 @@ The pseudocode of the algorithm is presented on the figure~\ref{pseudocode}. Fun
  % \Return{$graph$}
   \end{algorithm}
   \caption{Pseudocode of the analysed algorithm}
+  \label{pseudocode}
  \end{center}
 \end{figure}
 
@@ -177,10 +177,10 @@ Let $p_{ur}(i)$ be the probability to change the edge that hasn't been relaxed w
 The analysis shown above can't be applied to the cases when $V \le E$ because the slower modification of the algorithm can't acept graphs with $f \ge V$ because it accepts only trees. So let's consider the graph with two vertices and $E$ edges at first. As we has noticed, the Dijkstra algorithm iterates through the edges in the order they were given on input. It means that in graphs with two vertices relaxed edges will be ordered by decreasing weight. So we can consider them as in the figure~\ref{edges}. 
 
 \begin{figure}[ht]
-\label{edges}
 \begin{center}
   \includegraphics[width=12cm]{pic/edges.pdf}
   \caption{Array of edges. Bold sqares mark the relaxed edges. Vertical arrows show their weight.}
+  \label{edges}
  \end{center}
 \end{figure}
 
@@ -241,20 +241,20 @@ For greater $f$ there is a system of $(f - 1)^2$ differential equations for $f -
 Some series of experiments have been performed. Most of them gathered different statistics about graphs during algorithm run and gave us idea of the algorithm modification described in the section~\ref{sec:3}. Also we performed experiments that approved upper bound on runtime for the rarefied graphs. Figure~\ref{exper_rar} shows the results for $E = 100$ and $V$ from $110$ to $1000$ with step $10$ and $100$ runs for each value. As we can see, the upper bound is strongly above the experiments result, but it's not far above them.
 
 \begin{figure}[ht]
-\label{exper_rar} 
  \begin{center}
   \includegraphics[width = 11cm]{pic/exper_rar.png}
   \caption{Experiment results for the rarefied graphs}
+  \label{exper_rar} 
  \end{center} 
 \end{figure}
 
 Also we perfomed experiments for the dense graph with two vertices. We ran our algorithm for $V = 2$ and $E$ from $2$ to $98$ with step $3$ $80$ times for each value. Results approved our assumption that total runtime of the algorithm is not greater then $4E^3$. The results are shown in the figure~\ref{exper_den}.
 
 \begin{figure}[ht]
-\label{exper_den} 
  \begin{center}
   \includegraphics[width = 11cm]{pic/exper_den.png}
   \caption{Experiment results for the dense graphs}
+  \label{exper_den} 
  \end{center} 
 \end{figure}
 
