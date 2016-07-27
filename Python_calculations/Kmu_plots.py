@@ -11,7 +11,8 @@ def make_rarefied_graph():
 
 
     def bound(v, e):
-        return e * v * (2 * v - e - 1) / ((e + 1) * (v - e - 1)) * (gamma + log(e)) - e * v * log((v - 1) / (v - e)) / (v - e - 1)
+        return 2 * e * v ** 2 / (v - e)
+        #return e * v * (2 * v - e - 1) / ((e + 1) * (v - e - 1)) * (gamma + log(e)) - e * v * log((v - 1) / (v - e)) / (v - e - 1)
 
     vertices = list(range(110, 1000, 10))
     plt.plot(vertices, experiment, 'bo', label='experiment')
@@ -72,4 +73,4 @@ def make_dense_graph():
     plt.legend(loc=2)
     plt.show()
 
-make_dense_graph()
+make_rarefied_graph()

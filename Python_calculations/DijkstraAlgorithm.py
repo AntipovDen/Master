@@ -66,7 +66,9 @@ def dijkstra_many_vertices(v, edges):
     relaxed = 0
 
     cur_vertex = vertices[0]
+    connected_component = 0
     while True:
+        connected_component += 1
         if cur_vertex.number in graph:
             for edge in graph[cur_vertex.number]:
                 relaxValue = cur_vertex.mark + edge.weight
@@ -83,7 +85,7 @@ def dijkstra_many_vertices(v, edges):
         else:
             break
 
-    return relaxed
+    return relaxed, connected_component
 
 
 def dijkstra(v, edges):
@@ -137,47 +139,29 @@ def evo_run(vertices, edges):
     run_number += 1
     logfile.write("Run number {}\n".format(run_number))
     logfile.flush()
-    # if vertices > 2 * edges:
-    #     algorithm = dijkstra_many_vertices
-    # else:
-    algorithm = dijkstra
+    algorithm = dijkstra_many_vertices
     graph = init_graph(vertices, edges)
     f = 0
     iterations = 0
-    # cur_order = [Vertex(0, i) for i in range(vertices)]
-    # order_changes = []
-    # distances_changes = []
+
     while f != edges:
         iterations += 1
         next_gen = graph.copy()
         mutate(vertices, next_gen)
-        relaxed = algorithm(vertices, next_gen)
+        relaxed, connected_component = algorithm(vertices, next_gen)
 
         if relaxed >= f:
             if relaxed > f:
                 logfile.write("relaxed: {} with {} iterations\n".format(relaxed, iterations))
                 logfile.flush()
-            # order_changed, distances_changed = False, False
-            # for i in range(min(len(answer), len(cur_order))):
-            #     if not order_changed and cur_order[i].number != answer[i].number:
-            #         order_changed = True
-            #         order_changes.append(iterations)
-            #     if not distances_changed and cur_order[i].mark != answer[i].mark:
-            #         distances_changed = True
-            #         distances_changes.append(iterations)
-            #     if distances_changed and order_changed:
-            #         break
-
             graph = next_gen
             f = relaxed
 
-    return iterations  # , order_changes, distances_changes
+    return connected_component == edges - 1# , order_changes, distances_changes
 
 
 def optimize_simple(vertices, edges, max_weight):
-    # global run_number
-    # print("Run: ", run_number)
-    # run_number += 1
+
     graph = init_graph(edges, max_weight)
     f = 0
     iterations = 0
@@ -202,25 +186,16 @@ if len(sys.argv) == 1:
     stream_number = ''
 else:
     stream_number = '_{}'.format(sys.argv[1])
-logfile = open("data/logs/dijkstra_v2{}.log".format(stream_number), 'w')
+logfile = open("data/logs/dijkstra_many_vertices_is_tree{}.log".format(stream_number), 'w')
 runs = 10
 run_number = 0
-with open('data/experiments/dijkstra_v2{}.out'.format(stream_number), 'w') as f:
-    for e in list(range(2, 100, 3)):
-        f.write('{}\n'.format(sum([evo_run(v, e) for _ in range(runs)]) / runs))
-        f.flush()
-        # for _ in range(runs):
-        #     iterations, order_changes, distances_changes = evo_run(v, e)
-        #     f.write(str(iterations) + '\n')
-        #     for iter in order_changes:
-        #         #i'll merge them later
-        #         f.write(str(iter) + ' ')
-        #     f.write('\n')
-        #     for iter in distances_changes:
-        #         #i'll merge them later
-        #         f.write(str(iter) + ' ')
-        #     f.write('\n')
-        #     f.flush()
+with open('data/experiments/dijkstra_many_vertices_is_tree{}.out'.format(stream_number), 'w') as f:
+    for e in 10, 50, 100:
+        for v in range(int(e * 1.1), 10 * e, 2 * e // 10):
+            f.write(str(sum([evo_run(v, e) for _ in range(runs)]) / runs) + " ")
+            f.flush()
+        f.write('\n')
+
 logfile.close()
 
 

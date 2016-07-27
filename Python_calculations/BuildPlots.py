@@ -39,7 +39,8 @@ for j in range(9):
              [iterations[j], iterations[j]], [0, max(reachableVertexes[j])], 'b-')
     plt.title("reachable vertexes, v=" + str(VE[j][0]) + " e=" + str(VE[j][1]))
     plt.xlabel("iterations")
-    savefig("data/reachable_vertexes_v" + str(VE[j][0]) + "e" + str(VE[j][1]) + ".png")
+    plt.xscale('log')
+    savefig("data/graph_statistics/plots/reachable_vertexes_v" + str(VE[j][0]) + "e" + str(VE[j][1]) + ".png")
     #plt.show()
     plt.clf()
 
@@ -49,7 +50,8 @@ for j in range(9):
              [iterations[j], iterations[j]], [0, max(unreachableEdges[j])], 'b-')
     plt.title("unreachable edges, v=" + str(VE[j][0]) + " e=" + str(VE[j][1]))
     plt.xlabel("iterations")
-    savefig("data/unreachable_edges_v" + str(VE[j][0]) + "e" + str(VE[j][1]) + ".png")
+    plt.xscale('log')
+    savefig("data/graph_statistics/plots/unreachable_edges_v" + str(VE[j][0]) + "e" + str(VE[j][1]) + ".png")
     #plt.show()
     plt.clf()
 
@@ -59,7 +61,8 @@ for j in range(9):
              [iterations[j], iterations[j]], [0, max(leaves[j])], 'b-')
     plt.title("leaves, v=" + str(VE[j][0]) + " e=" + str(VE[j][1]))
     plt.xlabel("iterations")
-    savefig("data/leaves_v" + str(VE[j][0]) + "e" + str(VE[j][1]) + ".png")
+    plt.xscale('log')
+    savefig("data/graph_statistics/plots/leaves_v" + str(VE[j][0]) + "e" + str(VE[j][1]) + ".png")
     #plt.show()
     plt.clf()
 
@@ -69,7 +72,8 @@ for j in range(9):
              [iterations[j], iterations[j]], [0, max(depthInEdges[j])], 'b-')
     plt.title("max depth in edges, v=" + str(VE[j][0]) + " e=" + str(VE[j][1]))
     plt.xlabel("iterations")
-    savefig("data/max_depth_e_v" + str(VE[j][0]) + "e" + str(VE[j][1]) + ".png")
+    plt.xscale('log')
+    savefig("data/graph_statistics/plots/max_depth_e_v" + str(VE[j][0]) + "e" + str(VE[j][1]) + ".png")
     #plt.show()
     plt.clf()
 
@@ -79,7 +83,8 @@ for j in range(9):
              [iterations[j], iterations[j]], [0, max(depthInWeight[j])], 'b-')
     plt.title("max depth in weight, v=" + str(VE[j][0]) + " e=" + str(VE[j][1]))
     plt.xlabel("iterations")
-    savefig("data/max_depth_w_v" + str(VE[j][0]) + "e" + str(VE[j][1]) + ".png")
+    plt.xscale('log')
+    savefig("data/graph_statistics/plots/max_depth_w_v" + str(VE[j][0]) + "e" + str(VE[j][1]) + ".png")
     #plt.show()
     plt.clf()
 
@@ -89,6 +94,7 @@ for j in range(9):
              [iterations[j], iterations[j]], [0, max(relaxedEdges[j])], 'b-')
     plt.title("relaxed edges, v=" + str(VE[j][0]) + " e=" + str(VE[j][1]))
     plt.xlabel("iterations")
-    savefig("data/relaxed_edges_v" + str(VE[j][0]) + "e" + str(VE[j][1]) + ".png")
+    plt.xscale('log')
+    savefig("data/graph_statistics/plots/relaxed_edges_v" + str(VE[j][0]) + "e" + str(VE[j][1]) + ".png")
     #plt.show()
     plt.clf()
