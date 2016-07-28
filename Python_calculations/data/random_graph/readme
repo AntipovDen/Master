@@ -1,7 +1,0 @@
-files in directory:
-a.out -- calculated sums of A(i, v, e, l) with every possible params (using cpp)
-a_20.out -- the same for v = 20, as i understand
-s.out -- calculated S in the expression for A
-s_20.out -- S for v = 20
-Stirling.dat -- stirling numbers for n < 200
-reachable_vertices* -- expected numbers of reachable vertices in random graph with fixed number of vertices and variable number of edges
