@@ -7,3 +7,11 @@
 
 #Computation results
 *.out
+
+#data directories
+Python_calculations/data
+Python_calculations/images
+dinprog/data
+
+#idea project directories
+*/.idea
