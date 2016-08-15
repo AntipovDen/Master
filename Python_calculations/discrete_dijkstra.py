@@ -186,21 +186,29 @@ class Real_model:
                 self.orientation[edge] = old_orientation
                 self.edges[edge] = old_length
 
-runs = 1000
-for E in 20, 50, 100:
-    print('E =', E)
-    m = Real_model()
-    for unrelaxed_edge in range(E):
-        for free_distance in range(E):
-            print('UE:', unrelaxed_edge, 'FD:', free_distance)
-            my_model = sum([Model(unrelaxed_edge, free_distance).run() for _ in range(runs)]) / runs
-            real_model = sum([m.run(unrelaxed_edge, free_distance) for _ in range(runs)]) / runs
-            print('SSt:', my_model, real_model, abs(my_model - real_model) / max(my_model, real_model))
-            if unrelaxed_edge != 0:
-                my_model = sum([Model(unrelaxed_edge, free_distance, UNSTABLE_STATE).run() for _ in range(runs)]) / runs
-                real_model = sum([m.run(unrelaxed_edge, free_distance, UNSTABLE_STATE) for _ in range(runs)]) / runs
-                print('USS:', my_model, real_model, abs(my_model - real_model) / max(my_model, real_model))
-            if unrelaxed_edge > free_distance:
-                my_model = sum([Model(unrelaxed_edge, free_distance, POTENTIALLY_UNSTABLE_STATE).run() for _ in range(runs)]) / runs
-                real_model = sum([m.run(unrelaxed_edge, free_distance, POTENTIALLY_UNSTABLE_STATE) for _ in range(runs)]) / runs
-                print('PUS:', my_model, real_model, abs(my_model - real_model) / max(my_model, real_model))
+def compare_models():
+    runs = 1000
+    for E in 20, 50, 100:
+        print('E =', E)
+        m = Real_model()
+        for unrelaxed_edge in range(E):
+            for free_distance in range(E):
+                print('UE:', unrelaxed_edge, 'FD:', free_distance)
+                my_model = sum([Model(unrelaxed_edge, free_distance).run() for _ in range(runs)]) / runs
+                real_model = sum([m.run(unrelaxed_edge, free_distance) for _ in range(runs)]) / runs
+                print('SSt:', my_model, real_model, abs(my_model - real_model) / max(my_model, real_model))
+                if unrelaxed_edge != 0:
+                    my_model = sum([Model(unrelaxed_edge, free_distance, UNSTABLE_STATE).run() for _ in range(runs)]) / runs
+                    real_model = sum([m.run(unrelaxed_edge, free_distance, UNSTABLE_STATE) for _ in range(runs)]) / runs
+                    print('USS:', my_model, real_model, abs(my_model - real_model) / max(my_model, real_model))
+                if unrelaxed_edge > free_distance:
+                    my_model = sum([Model(unrelaxed_edge, free_distance, POTENTIALLY_UNSTABLE_STATE).run() for _ in range(runs)]) / runs
+                    real_model = sum([m.run(unrelaxed_edge, free_distance, POTENTIALLY_UNSTABLE_STATE) for _ in range(runs)]) / runs
+                    print('PUS:', my_model, real_model, abs(my_model - real_model) / max(my_model, real_model))
+
+runs = 1
+
+with open('data/experiments/discrete_dijkstra.out', 'w') as f:
+    for E in 20, 40, 70, 100, 150, 200, 300, 500:
+        f.write('E{} ue_left: {} ue_right: {}\n'.format(E, sum([Model().run() for _ in range(runs)])/runs, sum([Model(E - 1, 0).run() for _ in range(runs)])/runs))
+        f.flush()
