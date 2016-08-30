@@ -2,6 +2,7 @@ from fractions import Fraction
 from math import e
 from math import log
 from random import randrange
+from matplotlib import pyplot as plt
 
 STABLE_STATE = 0
 UNSTABLE_STATE = 1
@@ -20,7 +21,7 @@ def choose(function_map):
     return lambda: None
 
 
-class State_exception(Exception):
+class StateException(Exception):
     def __init__(self, msg):
         self.msg = msg
 
@@ -129,9 +130,9 @@ class Real_model:
     def reset(self, unrelaxed_edge=0, free_distance=E - 1, state=STABLE_STATE):
         # check for correctness
         if unrelaxed_edge == 0 and state == UNSTABLE_STATE:
-            raise State_exception('Unstabel state is impossible when the first edge is unrelaxed')
+            raise StateException('Unstabel state is impossible when the first edge is unrelaxed')
         if unrelaxed_edge <= free_distance and state == POTENTIALLY_UNSTABLE_STATE:
-            raise State_exception('PUS is impossible when the free distance is not on the left from the unrelaxed edge')
+            raise StateException('PUS is impossible when the free distance is not on the left from the unrelaxed edge')
 
         for i in range(free_distance, unrelaxed_edge):
             self.edges[i] -= 1
@@ -230,7 +231,7 @@ def run_model():
 # it's really simplified due to the special form of matrix.
 def gauss(a, b):
     n = len(a)
-    #upper triangle matrix
+    # upper triangle matrix
     for i in range(1, n):
         for j in range(0, i):
             if a[i][j] != 0:
@@ -239,7 +240,7 @@ def gauss(a, b):
                     a[i][k] -= a[j][k] * c
                 b[i] -= b[j] * c
 
-    #diagonal matrix
+    # diagonal matrix
     for i in reversed(range(n - 1)):
         for j in reversed(range(i + 1, n)):
             if a[i][j] != 0:
@@ -341,7 +342,7 @@ def make_matrix(E):
 def solve(E):
     a = make_matrix(E)
     b = [2 * E ** 2] * len(a)
-    answer =  gauss(a, b)
+    answer = gauss(a, b)
     stable_state = [[float(answer[i * E + j]) for j in range(E)] for i in range(E)]
     unstable_state = [[float(answer[E ** 2 + i * E + j]) for j in range(E)] for i in range(E - 1)]
     potentially_unstable_state = [[float(answer[i * E + j]) for j in range(i + 1)] for i in range(E - 1)]
@@ -356,43 +357,97 @@ def format_float(x, max_len=12):
     return '{}e{}'.format(str(x)[:max_len - 2 - len(str(exponent))], exponent)
 
 
-cell_size = 12
-with open('discrete_dijkstra_system.out', 'w') as f:
-    for E in range(4, 10):
-        ss, us, pus = solve(E)
-        f.write('E = {}\n'.format(E))
+def print_solution(e_from=4, e_to=100):
+    cell_size = 12
+    with open('discrete_dijkstra_system.out', 'w') as f:
+        for E in range(e_from, e_to):
+            ss, us, pus = solve(E)
+            f.write('E = {}\n'.format(E))
 
-        f.write('stable states\n')
-        f.write('i\\j|')
-        for j in range(E):
-            f.write('{}'.format(j).rjust(cell_size, '_'))
-        f.write('\n')
-        for i in range(E):
-            f.write('{}|'.format(i).rjust(4))
+            f.write('stable states\n')
+            f.write('i\\j|')
             for j in range(E):
-                f.write(format_float(ss[i][j]).rjust(cell_size))
+                f.write('{}'.format(j).rjust(cell_size, '_'))
             f.write('\n')
+            for i in range(E):
+                f.write('{}|'.format(i).rjust(4))
+                for j in range(E):
+                    f.write(format_float(ss[i][j]).rjust(cell_size))
+                f.write('\n')
 
-        f.write('unstable states\n')
-        f.write('i\\j|')
-        for j in range(E):
-            f.write('{}'.format(j).rjust(cell_size, '_'))
-        f.write('\n')
-        for i in range(E - 1):
-            f.write('{}|'.format(i + 1).rjust(4))
+            f.write('unstable states\n')
+            f.write('i\\j|')
             for j in range(E):
-                f.write(format_float(us[i][j]).rjust(cell_size))
+                f.write('{}'.format(j).rjust(cell_size, '_'))
             f.write('\n')
+            for i in range(E - 1):
+                f.write('{}|'.format(i + 1).rjust(4))
+                for j in range(E):
+                    f.write(format_float(us[i][j]).rjust(cell_size))
+                f.write('\n')
 
-        f.write('potentially unstable states\n')
-        f.write('i\\j|')
-        for j in range(E - 1):
-            f.write('{}'.format(j).rjust(cell_size, '_'))
-        f.write('\n')
-        for i in range(E - 1):
-            f.write('{}|'.format(i + 1).rjust(4))
-            for j in range(i + 1):
-                f.write(format_float(us[i][j]).rjust(cell_size))
+            f.write('potentially unstable states\n')
+            f.write('i\\j|')
+            for j in range(E - 1):
+                f.write('{}'.format(j).rjust(cell_size, '_'))
             f.write('\n')
+            for i in range(E - 1):
+                f.write('{}|'.format(i + 1).rjust(4))
+                for j in range(i + 1):
+                    f.write(format_float(us[i][j]).rjust(cell_size))
+                f.write('\n')
 
-        f.flush()
+            f.flush()
+
+def analyse_sloution():
+    max_ts = []
+    with open('discrete_dijkstra_system.out', 'r') as f:
+        e = int(f.readline().split()[-1])
+        while True:
+            i_max = j_max = max_t = 0
+            f.readline()
+            f.readline()
+            for i in range(e):
+                line = [float(x) for x in f.readline().split()[-e:]]
+                for j in range(e):
+                    if line[j] > max_t:
+                        i_max, j_max, max_t = i, j, line[j]
+                        max_t = line[j]
+            print('E{}:'.format(e))
+            print('SS: i={} j={} T={}'.format(i_max, j_max, max_t))
+            max_ts.append(max_t)
+
+            i_max = j_max = max_t = 0
+            f.readline()
+            f.readline()
+            for i in range(1, e):
+                line = [float(x) for x in f.readline().split()[-e:]]
+                for j in range(e):
+                    if line[j] > max_t:
+                        i_max, j_max, max_t = i, j, line[j]
+                        max_t = line[j]
+            print('US: i={} j={} T={}'.format(i_max, j_max, max_t))
+
+
+            i_max = j_max = max_t = 0
+            f.readline()
+            f.readline()
+            for i in range(1, e):
+                line = [float(x) for x in f.readline().split()[-i:]]
+                for j in range(i):
+                    if line[j] > max_t:
+                        i_max, j_max, max_t = i, j, line[j]
+                        max_t = line[j]
+            print('PUS: i={} j={} T={}'.format(i_max, j_max, max_t))
+            e = f.readline()
+            if e:
+                e = int(e.split()[-1])
+            else:
+                return max_ts
+
+res = analyse_sloution()
+x = list(range(4, 21))
+y1 = res
+y2 = [10 * i ** 3 for i in x]
+plt.plot(x, y1, 'ro', x, y2, 'bo')
+plt.show()
